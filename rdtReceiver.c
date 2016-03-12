@@ -18,9 +18,8 @@
 
 /*
  *	This program is a TCPclient that communicates to TCPserver. This program uses TCPmain 
- *		to send a certain ammount of messages and tests to see if those messages
- *		fit the criteria that the server replies with
- *
+ *	to send a certain ammount of messages and tests to see if those messages
+ *	fit the criteria that the server replies with
  */
 
 int createSocket()
