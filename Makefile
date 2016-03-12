@@ -10,4 +10,4 @@ rdtReceiver : rdtReceiver.c rdtReceiver.h
 	gcc $(CFLAGS) -o rdtReceiver rdtReceiver.c rdtReceiver.h rdtReceiverMain.c
 
 clean :
-	rm rdtSender rdtClient
+	rm rdtSender rdtReceiver
