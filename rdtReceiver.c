@@ -1,6 +1,7 @@
 /*
- *	File Name: TCPclient.c
- *	Author: Joshua Wright
+ *	rdtReceiver.c
+ *	Joshua Wright
+ *  Sam Stein
  *	Project: 1
  *
  */

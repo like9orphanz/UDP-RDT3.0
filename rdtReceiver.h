@@ -6,8 +6,8 @@
  * This file describes the functions to be implemented by an RDT receiver.
  */
 
- #ifndef _RDT_RECEIVER_H
- #define _RDT_RECEIVER_H
+ #ifndef _RDTRECEIVER_H
+ #define _RDTRECEIVER_H
 
 /*
  * Receives a message from an RDT sender on a specified port.

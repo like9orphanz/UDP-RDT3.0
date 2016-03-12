@@ -10,5 +10,6 @@
 
 int main()
 {
+	printf("eyyy\n");
 	return 0;
 }
