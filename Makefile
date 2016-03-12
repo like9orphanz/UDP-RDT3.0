@@ -7,7 +7,7 @@ rdtSender : rdtSender.c rdtSender.h
 	gcc $(CFLAGS) -o rdtSender rdtSender.c rdtSender.h
 
 rdtReceiver : rdtReceiver.c rdtReceiver.h
-	gcc $(CFLAGS) -o rdtReceiver rdtReceiver.c rdtReceiver.h rdtReceiverMain.c
+	gcc $(CFLAGS) -o rdtReceiver rdtReceiverMain.c rdtReceiver.c rdtReceiver.h
 
 clean :
 	rm rdtSender rdtReceiver
