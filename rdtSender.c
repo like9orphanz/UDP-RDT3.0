@@ -68,7 +68,7 @@ int loadAvg(char rcvString[256]);
 void changeLoadAvg(char * buffer, char * rcvString);
 int getLoad(char *store);
 
-
+/*
 int main(int argc, char** argv)
 {
 	if(argc != 2)
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 
 	return(EXIT_SUCCESS);
 }
-
+*/
 /*
  *	processInfo : reads the message that the client sends and depending on what the message says 
  *		responds accordingly

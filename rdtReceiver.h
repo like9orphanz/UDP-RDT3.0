@@ -65,5 +65,6 @@ void printResponse(char * response);
  */
 int closeSocket(int sockFD);
 
+void printHostInfo();
 
 #endif

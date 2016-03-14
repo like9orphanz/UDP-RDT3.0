@@ -17,22 +17,15 @@
 #include <stdint.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
-{	
-	int portNum, proxyPortNum;
-	char *proxyHostName;
-	
-	if (argc != 4)
-	{
-		printf("Rerun rdtSender with the correct command line arguments\n");
-		exit(-1);
-	}
-	
-	proxyHostName = (char *) malloc (sizeof(char) * 1024);
+void printHostInfo()
+{
+ 	char hostname[1024];
+    hostname[1023] = '\0';
+	struct hostent * hostptr;
+	gethostname(hostname, 1023);
+	//find the ip address
+	hostptr = gethostbyname(hostname);
+	fprintf(stderr, "Host Name: %s\n", hostname);
+	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
 
-	portNum = atoi(argv[1]);
-	strcpy(proxyHostName, argv[2]);
-	proxyPortNum = atoi(argv[3]);
-
-	return 0;
 }

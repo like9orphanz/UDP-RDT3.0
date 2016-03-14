@@ -8,8 +8,19 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-	printf("eyyy\n");
+	int portNum, sockFD;
+
+	if (argc != 2)
+	{
+		printf("Rerun with port number as command line argument\n");
+		exit(-1);
+	}
+
+	portNum = atoi(argv[1]);
+	sockFD = createSocket();
+	printHostInfo();
+
 	return 0;
 }
