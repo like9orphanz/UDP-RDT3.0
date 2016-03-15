@@ -17,9 +17,6 @@
 #include <stdint.h>
 #include <unistd.h>
 
-/*
- * Print the host information to the terminal
- */
 void printHostInfo()
 {
  	char hostname[1024];
