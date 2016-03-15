@@ -3,11 +3,11 @@ CC = gcc
 
 all : rdtSender rdtReceiver rdtProxy
 
-rdtSender : rdtSender.c rdtSender.h
-	gcc $(CFLAGS) -o rdtSender rdtSender.c rdtSender.h
+rdtSender : rdtSender.c rdtSender.h rdtSenderMain.c
+	gcc $(CFLAGS) -o rdtSender rdtSender.c rdtSenderMain.c
 
-rdtReceiver : rdtReceiver.c rdtReceiver.h
-	gcc $(CFLAGS) -o rdtReceiver rdtReceiver.c rdtReceiver.h
+rdtReceiver : rdtReceiver.c rdtReceiver.h rdtReceiverMain.c
+	gcc $(CFLAGS) -o rdtReceiver rdtReceiver.c rdtReceiverMain.c
 
 rdtProxy : rdtProxy.c rdtProxy.h rdtProxyMain.c
 	gcc $(CFLAGS) -o rdtProxy rdtProxy.c rdtProxyMain.c

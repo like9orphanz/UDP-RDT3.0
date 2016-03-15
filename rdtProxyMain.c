@@ -15,7 +15,7 @@
 
  int main(int argc, char *argv[])
 {
-	int portNum, sockFD, rcvPort;
+	int portNum, rcvPort;
 	double lostPercent, delayedPercent, errorPercent;
 	char *rcvHostName;
 

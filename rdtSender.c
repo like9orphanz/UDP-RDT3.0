@@ -8,6 +8,8 @@
  * Project 4
  */
 
+#include "rdtSender.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -62,53 +64,12 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 }
 
 /*
- * Reads client message and responds accordingly
- */
-int processInfo(char *buffer, char *rcvString)
-{
-	int errorCheck = 0, response = 0;
-	int length = strlen(buffer);
-	if(length > 256)
-		return response;
-	bzero(rcvString, 256);
-	if((errorCheck = pShutdown(buffer)) == 0)
-		response = 1;
-	else if((errorCheck = echo(buffer)) != 0)
-		changeEcho(buffer, rcvString);
-	else if((errorCheck = loadAvg(buffer)) != 0)
-		changeLoadAvg(buffer, rcvString);
-	else
-		unknownError(buffer, rcvString);
-	
-	return response;
-}
-
-/*
  * Handle incorrect or invalid formatting
  */
 void unknownError(char *buffer, char *rcvString)
 {
 	bzero(rcvString, 256);
 	strcpy(rcvString, "<error>unknown format</error>");
-}
-
-/*
- * Echo the message back to the client
- */
-int echo(char * rcvString)
-{
-	int response = 0;
-	char dest[256];
-	bzero(dest, 256);
-	//puts the first 6 chars in the dest array
-	strxfrm(dest, rcvString, 6);
-	char *end = strstr(rcvString, "</echo>");
-        if(end != NULL)
-	{
-		if((strcmp(dest, "<echo>") == 0) && (strcmp(end, "</echo>") == 0))
-			response = 1;
-	}
-	return response;
 }
 
 /*
@@ -147,6 +108,66 @@ void changeEcho(char * buffer, char * rcvString)
 }
 
 /*
+ * Wrap the load avg in appropriate XML tags
+ */
+void changeLoadAvg(char * buffer, char * rcvString)
+{
+	char store[256];
+	bzero(store, 256);
+	strcpy(rcvString, "<replyLoadAvg>");
+	int errorCheck = getLoad(store);
+	if(errorCheck == -1)
+	{
+		fprintf(stderr, "Failed getting load aver\n");
+		exit(-1);
+	}
+	strcat(rcvString, store);
+	strcat(rcvString, "</replyLoadAvg>");
+}
+
+/*
+ * Reads client message and responds accordingly
+ */
+int processInfo(char *buffer, char *rcvString)
+{
+	int errorCheck = 0, response = 0;
+	int length = strlen(buffer);
+	if(length > 256)
+		return response;
+	bzero(rcvString, 256);
+	if((errorCheck = pShutdown(buffer)) == 0)
+		response = 1;
+	else if((errorCheck = echo(buffer)) != 0)
+		changeEcho(buffer, rcvString);
+	else if((errorCheck = loadAvg(buffer)) != 0)
+		changeLoadAvg(buffer, rcvString);
+	else
+		unknownError(buffer, rcvString);
+	
+	return response;
+}
+
+/*
+ * Echo the message back to the client
+ */
+int echo(char * rcvString)
+{
+	int response = 0;
+	char dest[256];
+	bzero(dest, 256);
+	//puts the first 6 chars in the dest array
+	strxfrm(dest, rcvString, 6);
+	char *end = strstr(rcvString, "</echo>");
+        if(end != NULL)
+	{
+		if((strcmp(dest, "<echo>") == 0) && (strcmp(end, "</echo>") == 0))
+			response = 1;
+	}
+	return response;
+}
+
+
+/*
  * Gracefully shutdown the server
  */
 int pShutdown(char * rcvString)
@@ -166,24 +187,6 @@ int loadAvg(char rcvString[256])
 		return 1;
 	else
 		return 0;
-}
-
-/*
- * Wrap the load avg in appropriate XML tags
- */
-void changeLoadAvg(char * buffer, char * rcvString)
-{
-	char store[256];
-	bzero(store, 256);
-	strcpy(rcvString, "<replyLoadAvg>");
-	int errorCheck = getLoad(store);
-	if(errorCheck == -1)
-	{
-		fprintf(stderr, "Failed getting load aver\n");
-		exit(-1);
-	}
-	strcat(rcvString, store);
-	strcat(rcvString, "</replyLoadAvg>");
 }
 
 /* 
