@@ -3,18 +3,12 @@
  * Systems and Networks II
  * Project 4
  *
- * This file describes the function(s) to be implemented by an RDT sender.
+ * This file describes the function(s) to be implemented by an RDT sender
  */
 
-<<<<<<< HEAD
-#ifndef _RDT_SENDER_H
-#define _RDT_SENDER_H
-
-=======
 #ifndef _RDTSENDER_H
 #define _RDTSENDER_H
 #include <netinet/in.h>
->>>>>>> Proxy-Basic
 /*
  * Sends a message to an RDT receiver on a specified host and port.
  * 
@@ -26,9 +20,6 @@
  */
 int sendMessage (char* desthost, int destPort, char* message);
 
-<<<<<<< HEAD
-#endif _RDT_SEND_H
-=======
 /*
  * Reads client message and responds accordingly
  */
@@ -90,4 +81,3 @@ void printHostInfo();
 void handler(int param);
 
 #endif 
->>>>>>> Proxy-Basic
