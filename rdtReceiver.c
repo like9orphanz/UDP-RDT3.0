@@ -111,10 +111,13 @@ int closeSocket(int sockFD)
 	return errorCheck;
 }
 
+/*
+ * Print host information to the terminal
+ */ 
 void printHostInfo()
 {
  	char hostname[1024];
-        hostname[1023] = '\0';
+    hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address

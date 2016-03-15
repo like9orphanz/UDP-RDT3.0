@@ -5,8 +5,7 @@
  * Sam Stein
  * Joshua Wright
  *
- * Implements rdtProxy.c to pass messages from server to client 
- *
+ * Uses rdtProxy.c to pass messages from server to client 
  */
 
  #include "rdtProxy.h"

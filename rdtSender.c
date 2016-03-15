@@ -1,5 +1,5 @@
 /* 
- * UDPserver.c 
+ * rdtSender.c 
  *     
  * Sam Stein
  * Joshua Wright
@@ -26,20 +26,18 @@
 #include <stdint.h>
 #include <unistd.h>
 
-
 /*
- *	This program is to simulate a server that can communicate with a client and 
- *	respond accordingly. Depending on what message the client sends the server will 
- *	send either <reply></reply>, the load average, or <error></error>
- *
+ * Handle the shut down signal
  */
-int ListenSockCreation(int port, struct sockaddr_in *address);
-
 void handler(int param)
 {
 	fprintf(stderr, "\nCTRL-C has been entered. The server is shut down.\n");
 	exit(EXIT_SUCCESS);
 }
+
+/*
+ * Prints the host information to the terminal
+ */
 void printHostInfo()
 {
  	char hostname[1024];
@@ -52,6 +50,7 @@ void printHostInfo()
 	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
 
 }
+
 void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
@@ -59,73 +58,9 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd)
         getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
 	fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }
-int processInfo(char *buffer, char *rcvString);
-void unknownError(char *buffer, char *rcvString);
-int echo(char rcvString[256]);
-void changeEcho(char * buffer, char * rcvString);
-int pShutdown(char rcvString[256]);
-int loadAvg(char rcvString[256]);
-void changeLoadAvg(char * buffer, char * rcvString);
-int getLoad(char *store);
 
 /*
-int main(int argc, char** argv)
-{
-	if(argc != 2)
-        {
-                fprintf(stderr, "Please input <port>\n");
-                exit(1);
-        }
-
-	//Listen socket descriptor (reference)
-	int ls;
-	//Number of bytes to send or reciever
-	int len = 0;
-	//Size of waiting clients
-	int waitSize = 16;
-	//Server address, and client address
-	struct sockaddr_in serverAddress, clientAddress;
-	struct in_addr a;
-	socklen_t addr_size;
-	addr_size = sizeof(clientAddress);
-	char sentMessage[256];
-	int errorCheck = 0;
-
-	//bind the socket
-	ls = ListenSockCreation(atoi(argv[1]), &serverAddress);
-
-	printHostInfo();
-	portInfo(&serverAddress, ls);
-
-	char buffer[256];
-	bzero(buffer, 256);
-	
-	//infinite loop, accept connection and process info
-	while(1)
-	{
-		len = recvfrom(ls, buffer, sizeof(buffer), 0, (struct sockaddr*)&clientAddress, &addr_size);
-
-		printf("Connected with %s at port %d\n", inet_ntoa(clientAddress.sin_addr), htons(clientAddress.sin_port));
-		if(len < 0)
-			fprintf(stderr, "ERROR in recvfrom\n");
-
-		if((processInfo(buffer, sentMessage)) == 0)
-			sendto(ls, sentMessage, sizeof(sentMessage), 0, (struct sockaddr *)&clientAddress, sizeof(struct sockaddr_in));
-		else
-		{
-			strcpy(sentMessage, "Shutting Down");
-			sendto(ls, sentMessage, sizeof(sentMessage), 0, (struct sockaddr *)&clientAddress, sizeof(struct sockaddr_in));
-			return(EXIT_SUCCESS);
-		}
-	}
-
-	return(EXIT_SUCCESS);
-}
-*/
-/*
- *	processInfo : reads the message that the client sends and depending on what the message says 
- *		responds accordingly
- *
+ * Reads client message and responds accordingly
  */
 int processInfo(char *buffer, char *rcvString)
 {
@@ -144,16 +79,20 @@ int processInfo(char *buffer, char *rcvString)
 		unknownError(buffer, rcvString);
 	
 	return response;
-
-
 }
 
+/*
+ * Handle incorrect or invalid formatting
+ */
 void unknownError(char *buffer, char *rcvString)
 {
 	bzero(rcvString, 256);
 	strcpy(rcvString, "<error>unknown format</error>");
 }
 
+/*
+ * Echo the message back to the client
+ */
 int echo(char * rcvString)
 {
 	int response = 0;
@@ -168,9 +107,11 @@ int echo(char * rcvString)
 			response = 1;
 	}
 	return response;
-
-
 }
+
+/*
+ * Wrap the message in appropriate XML tags
+ */
 void changeEcho(char * buffer, char * rcvString)
 {
 	int i = 0, length = 0;
@@ -201,27 +142,33 @@ void changeEcho(char * buffer, char * rcvString)
 	strcat(reply, "</reply>");
 	bzero(rcvString, 256);
 	strcpy(rcvString, reply);
-	
-
 }
+
+/*
+ * Gracefully shutdown the server
+ */
 int pShutdown(char * rcvString)
 {
 	int response = 1;
 	if((strcmp(rcvString, "<shutdown/>")) == 0)
 		response = 0;
 	return response;
-
 }
 
+/*
+ * Calculate the average server load
+ */
 int loadAvg(char rcvString[256])
 {
 	if((strcmp(rcvString, "<loadavg/>")) == 0)
 		return 1;
 	else
 		return 0;
-
 }
 
+/*
+ * Wrap the load avg in appropriate XML tags
+ */
 void changeLoadAvg(char * buffer, char * rcvString)
 {
 	char store[256];
@@ -237,6 +184,9 @@ void changeLoadAvg(char * buffer, char * rcvString)
 	strcat(rcvString, "</replyLoadAvg>");
 }
 
+/* 
+ * Get the current load on the server
+ */
 int getLoad(char *store)
 {
 	double loadAvg[3];
@@ -248,9 +198,11 @@ int getLoad(char *store)
 		sprintf(store, "%f:%f:%f", loadAvg[0], loadAvg[1], loadAvg[2]);
 	}
 	return errorCheck;
-
 }
-//function to creation listen socket and bind it
+
+/*
+ * Creates the listening socket
+ */
 int ListenSockCreation(int port, struct sockaddr_in *address)
 {
 	int sock_ls;
@@ -276,5 +228,4 @@ int ListenSockCreation(int port, struct sockaddr_in *address)
         }
 
 	return sock_ls;
-
 }					
