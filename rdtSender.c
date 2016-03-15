@@ -50,6 +50,9 @@ void printHostInfo()
 
 }
 
+/*
+ * Displays port info with the getsockname() funciton
+ */
 void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;

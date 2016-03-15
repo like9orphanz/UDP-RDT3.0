@@ -10,11 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> Proxy-Basic
 	int portNum, sockFD;
 
 	if (argc != 2)
@@ -27,9 +22,5 @@ int main(int argc, char *argv[])
 	sockFD = createSocket();
 	printHostInfo();
 
-<<<<<<< HEAD
->>>>>>> Proxy-Basic
-=======
->>>>>>> Proxy-Basic
 	return 0;
 }
