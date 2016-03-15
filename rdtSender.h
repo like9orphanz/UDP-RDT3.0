@@ -1,4 +1,4 @@
-  /*
+/*
  * rdtSender.h
  * Systems and Networks II
  * Project 4
@@ -6,8 +6,8 @@
  * This file describes the function(s) to be implemented by an RDT sender.
  */
 
-#ifndef _RDTSENDER_H
-#define _RDTSENDER_H
+#ifndef _RDT_SENDER_H
+#define _RDT_SENDER_H
 
 /*
  * Sends a message to an RDT receiver on a specified host and port.
@@ -20,4 +20,4 @@
  */
 int sendMessage (char* desthost, int destPort, char* message);
 
-#endif 
+#endif _RDT_SEND_H
