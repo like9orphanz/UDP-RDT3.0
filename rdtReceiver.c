@@ -22,6 +22,9 @@
  *	fit the criteria that the server replies with
  */
 
+/*
+ * Creates a datagram socket, returns the socket file descriptor
+ */
 int createSocket()
 {
 	int sockfd;

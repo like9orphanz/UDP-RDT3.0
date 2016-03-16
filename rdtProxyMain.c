@@ -15,7 +15,7 @@
 
  int main(int argc, char *argv[])
 {
-	int portNum, rcvPort;
+	int portNum, rcvPort, sockFD;
 	double lostPercent, delayedPercent, errorPercent;
 	char *rcvHostName;
 
@@ -35,5 +35,8 @@
 	errorPercent = atoi(argv[6]);
 
 	printHostInfo();
+
+	sockFD = createSocket();
+
 	return 0;
 }

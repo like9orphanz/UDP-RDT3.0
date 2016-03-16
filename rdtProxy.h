@@ -6,4 +6,9 @@
  */
 void printHostInfo();
 
+/*
+ * Creates a datagram socket, returns the socket file descriptor
+ */
+int createSocket();
+
 #endif

@@ -32,3 +32,18 @@ void printHostInfo()
 	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
 
 }
+
+/*
+ * Creates a datagram socket, returns the socket file descriptor
+ */
+int createSocket()
+{
+	int sockfd;
+	if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+		fprintf(stderr, "ERROR opening socket");
+
+	struct sockaddr_in printSock;
+	socklen_t addrSize = sizeof(struct sockaddr_in);
+	getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
+	return sockfd;
+}
