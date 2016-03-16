@@ -80,4 +80,9 @@ void printHostInfo();
  */
 void handler(int param);
 
+/*
+ * Prompt user to input message to be send from sender to proxy
+ */
+char * getUserInput();
+
 #endif 

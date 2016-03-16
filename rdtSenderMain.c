@@ -19,7 +19,8 @@
 int main(int argc, char *argv[])
 {	
 	int portNum, proxyPortNum;
-	char *proxyHostName;
+	char *proxyHostName, *message;
+
 	
 	if (argc != 4)
 	{
@@ -32,6 +33,9 @@ int main(int argc, char *argv[])
 	portNum = atoi(argv[1]);
 	strcpy(proxyHostName, argv[2]);
 	proxyPortNum = atoi(argv[3]);
+
+	message = getUserInput();
+	printf("%s\n", message);
 
 	return 0;
 }

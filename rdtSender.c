@@ -227,10 +227,26 @@ int ListenSockCreation(int port, struct sockaddr_in *address)
 	//binds the socket
         if(bind(sock_ls, (struct sockaddr *)address, sizeof(*address)) < 0)
         {
-                fprintf(stderr, "Error binding\n");
-                close(sock_ls);
-                exit(1);
+            fprintf(stderr, "Error binding\n");
+            close(sock_ls);
+            exit(1);
         }
 
 	return sock_ls;
 }					
+
+/*
+ * Prompt user to input message to be send from sender to proxy
+ */
+char * getUserInput()
+{
+	char *message = (char *) malloc (sizeof(char) * 256);
+	//bzero(message, 256);
+	printf("Enter the message you'd like to send:\n");
+	fgets(message, 256, stdin);
+
+	if ((strlen(message) > 0) && (message[strlen(message) - 1] == '\n'))
+		message[strlen(message) - 1] = '\0';
+
+	return message;
+}
