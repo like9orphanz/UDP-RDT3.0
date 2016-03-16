@@ -42,7 +42,7 @@ void handler(int param)
 void printHostInfo()
 {
  	char hostname[1024];
-        hostname[1023] = '\0';
+    hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -220,8 +220,8 @@ int ListenSockCreation(int port, struct sockaddr_in *address)
 	//creates a socket
 	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
         {
-                fprintf(stderr, "Error: listen sock failed!");
-                exit(1);
+            fprintf(stderr, "Error: listen sock failed!");
+            exit(1);
         }
 
 	//binds the socket
@@ -249,4 +249,50 @@ char * getUserInput()
 		message[strlen(message) - 1] = '\0';
 
 	return message;
+}
+
+/*
+ * Create a 'segment' structure, assign the pased string to segMessage
+ */
+SegmentP createSegment(char *parsedChars)
+{
+	if (parsedChars == 0x00) return  0x00;
+
+	SegmentP thisSegment = (SegmentP) malloc (sizeof(struct Segment));
+
+	thisSegment->ack = 0;
+	thisSegment->seqNum = 0;
+	thisSegment->messageSize = 0;
+
+	thisSegment->segMessage = parsedChars;
+
+	return thisSegment;
+}
+
+/*
+ * Parse the message obtained from user in 'getUserInput()'
+ */
+char * parseMessage(int count, char *message)
+{
+	int i;
+	int a = 0;
+	char *parsedChars = (char *) malloc(sizeof(char) * 4);
+
+	for ((i = count * 4) ; (i < (count * 4) + 4) ; i++) 
+	{	
+		if (i != 0)
+		{
+			if (message[i - 1] == '\0') return 0x00;
+			parsedChars[a] = message[i - 1];
+			a++;
+		}
+		else
+		{
+			if (message[i] == '\0') return 0x00;
+			parsedChars[a] = message[i];
+			a++;
+		}
+	}
+
+	return parsedChars;
 }

@@ -8,7 +8,19 @@
 
 #ifndef _RDTSENDER_H
 #define _RDTSENDER_H
+
 #include <netinet/in.h>
+
+typedef struct Segment *SegmentP;
+
+struct Segment
+{
+	int ack;
+	int seqNum;
+	int messageSize;
+	char *segMessage;
+};
+
 /*
  * Sends a message to an RDT receiver on a specified host and port.
  * 
@@ -84,5 +96,15 @@ void handler(int param);
  * Prompt user to input message to be send from sender to proxy
  */
 char * getUserInput();
+
+/*
+ * Create a 'segment' structure, assign the pased string to segMessage
+ */
+SegmentP createSegment(char *parsedChars);
+
+/*
+ * Parse the message obtained from user in 'getUserInput()'
+ */
+char *parseMessage(int count, char *message);
 
 #endif 

@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 	int portNum, proxyPortNum;
 	char *proxyHostName, *message;
 
+	int i = 0;
 	
 	if (argc != 4)
 	{
@@ -35,7 +36,17 @@ int main(int argc, char *argv[])
 	proxyPortNum = atoi(argv[3]);
 
 	message = getUserInput();
-	printf("%s\n", message);
+
+	// Parse message into segments
+	while (i < strlen(message) - 1)
+	{	
+		printf("in while\n");
+		SegmentP thisSegment = createSegment(parseMessage(i, message));
+		if (thisSegment == 0x00) break;
+		printf("thisSegment->segMessage @ %d = %s\n", i, thisSegment->segMessage);
+		free(thisSegment);
+		i++;
+	}
 
 	return 0;
 }
