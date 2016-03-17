@@ -11,16 +11,15 @@
 int main(int argc, char *argv[])
 {
 	int portNum, sockFD;
-
+	struct sockaddr_in rcvAddress;
 	if (argc != 2)
 	{
 		printf("Rerun with port number as command line argument\n");
 		exit(-1);
 	}
 
-	portNum = atoi(argv[1]);
-	sockFD = createSocket();
+	sockFD = sockCreation(atoi(argv[1]), &rcvAddress);
 	printHostInfo();
-
+	portInfo(&rcvAddress, sockFD);
 	return 0;
 }

@@ -15,11 +15,16 @@
 #include <signal.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <math.h>
 
 int main(int argc, char *argv[])
 {	
-	int portNum, proxyPortNum;
+	int portNum, proxyPortNum, sockFD;
 	char *proxyHostName, *message;
+	struct sockaddr_in proxAddress;
+	struct sockaddr_in sendAddress;
+	char inputMessage[256];
+	bzero(inputMessage, 256); 
 
 	int i = 0;
 	
@@ -35,18 +40,26 @@ int main(int argc, char *argv[])
 	strcpy(proxyHostName, argv[2]);
 	proxyPortNum = atoi(argv[3]);
 
-	message = getUserInput();
+	sockFD = createSocket();
+	int sendSockFD = sockCreation(proxyHostName, portNum, &sendAddress);
+        printHostInfo();
+        portInfo(&sendAddress, sendSockFD);
+
+	printf("Enter a Message: ");
+	fgets(inputMessage, 256, stdin);
+	inputMessage[strlen(inputMessage)-1] = '\0';
+	printf("message = %s\n", inputMessage);
 
 	// Parse message into segments
-	while (i < strlen(message) - 1)
+	while (i < strlen(inputMessage) - 1)
 	{	
 		printf("in while\n");
-		SegmentP thisSegment = createSegment(parseMessage(i, message));
+		SegmentP thisSegment = createSegment(parseMessage(i, inputMessage));
 		if (thisSegment == 0x00) break;
 		printf("thisSegment->segMessage @ %d = %s\n", i, thisSegment->segMessage);
 		free(thisSegment);
+		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
 		i++;
 	}
-
 	return 0;
 }

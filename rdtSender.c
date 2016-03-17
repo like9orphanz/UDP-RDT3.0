@@ -41,8 +41,8 @@ void handler(int param)
  */
 void printHostInfo()
 {
- 	char hostname[1024];
-    hostname[1023] = '\0';
+	char hostname[1024];
+        hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -208,48 +208,42 @@ int getLoad(char *store)
 /*
  * Creates the listening socket
  */
-int ListenSockCreation(int port, struct sockaddr_in *address)
+int createSocket()
+{
+	int sockfd;
+        if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+                fprintf(stderr, "ERROR opening socket");
+
+        struct sockaddr_in printSock;
+        socklen_t addrSize = sizeof(struct sockaddr_in);
+        getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
+        return sockfd;
+}
+int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
 {
 	int sock_ls;
 
-        memset(address, 0, sizeof(*address));
-        address->sin_family = AF_INET;
-        address->sin_addr.s_addr = htonl(INADDR_ANY);
-        address->sin_port = htons(port);
+        memset(dest, 0, sizeof(*dest));
+        dest->sin_family = AF_INET;
+        dest->sin_addr.s_addr = htonl(INADDR_ANY);
+        dest->sin_port = htons(port);
 
-	//creates a socket
 	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
         {
-            fprintf(stderr, "Error: listen sock failed!");
-            exit(1);
+                fprintf(stderr, "Error: listen sock failed!");
+                exit(1);
         }
 
-	//binds the socket
-        if(bind(sock_ls, (struct sockaddr *)address, sizeof(*address)) < 0)
+	if(bind(sock_ls, (struct sockaddr *)dest, sizeof(*dest)) < 0)
         {
-            fprintf(stderr, "Error binding\n");
-            close(sock_ls);
-            exit(1);
+                fprintf(stderr, "Error binding\n");
+                close(sock_ls);
+                exit(1);
         }
 
 	return sock_ls;
+
 }					
-
-/*
- * Prompt user to input message to be send from sender to proxy
- */
-char * getUserInput()
-{
-	char *message = (char *) malloc (sizeof(char) * 256);
-	//bzero(message, 256);
-	printf("Enter the message you'd like to send:\n");
-	fgets(message, 256, stdin);
-
-	if ((strlen(message) > 0) && (message[strlen(message) - 1] == '\n'))
-		message[strlen(message) - 1] = '\0';
-
-	return message;
-}
 
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
@@ -270,7 +264,7 @@ SegmentP createSegment(char *parsedChars)
 }
 
 /*
- * Parse the message obtained from user in 'getUserInput()'
+ * Parse the message obtained from user
  */
 char * parseMessage(int count, char *message)
 {
@@ -283,7 +277,7 @@ char * parseMessage(int count, char *message)
 		if (i != 0)
 		{
 			if (message[i - 1] == '\0') return 0x00;
-			parsedChars[a] = message[i - 1];
+			parsedChars[a] = message[i];
 			a++;
 		}
 		else
@@ -296,3 +290,26 @@ char * parseMessage(int count, char *message)
 
 	return parsedChars;
 }
+int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort)
+{
+        printf("Sending request\n");
+        int errorCheck = 0;
+        struct hostent * htptr;
+        struct sockaddr_in dest;
+
+        if((htptr = gethostbyname(serverName)) == NULL)
+        {
+                fprintf(stderr, "Invalid host name\n");
+                return -1;
+        }
+
+        memset(&dest, 0, sizeof(dest));
+        dest.sin_family = AF_INET;
+        dest.sin_port = htons(serverPort);
+        dest.sin_addr = *((struct in_addr *)htptr->h_addr);
+
+        errorCheck = sendto(sockFD, (struct Segment*)&thisSegment, sizeof(thisSegment), 0, (const struct sockaddr *)&dest, sizeof(dest));
+
+        return errorCheck;
+}
+

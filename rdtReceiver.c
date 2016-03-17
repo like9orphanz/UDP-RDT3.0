@@ -16,6 +16,9 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+void portInfo(struct sockaddr_in *serverAddress, int sockfd);
+int sockCreation(int port, struct sockaddr_in *address);
+
 /*
  *	This program is a TCPclient that communicates to TCPserver. This program uses TCPmain 
  *	to send a certain ammount of messages and tests to see if those messages
@@ -34,6 +37,7 @@ int createSocket()
 	struct sockaddr_in printSock;
 	socklen_t addrSize = sizeof(struct sockaddr_in);
 	getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
+	fprintf(stderr, "Sock Port: %d\n", ntohs(printSock.sin_port));
 	return sockfd;
 }
 
@@ -119,12 +123,44 @@ int closeSocket(int sockFD)
 void printHostInfo()
 {
  	char hostname[1024];
-    hostname[1023] = '\0';
+    	hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
 	hostptr = gethostbyname(hostname);
 	fprintf(stderr, "Host Name: %s\n", hostname);
 	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
+}
+int sockCreation(int port, struct sockaddr_in *address)
+{
+	int sock_ls;
+	
+	memset(address, 0, sizeof(*address));
+        address->sin_family = AF_INET;
+        address->sin_addr.s_addr = htonl(INADDR_ANY);
+        address->sin_port = htons(port);
 
+	//creates a socket
+	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
+        {
+                fprintf(stderr, "Error: listen sock failed!");
+                exit(1);
+        }
+
+	//binds the socket
+	if(bind(sock_ls, (struct sockaddr *)address, sizeof(*address)) < 0)
+        {
+                fprintf(stderr, "Error binding\n");
+                close(sock_ls);
+                exit(1);
+        }
+
+	return sock_ls;
+}
+void portInfo(struct sockaddr_in *serverAddress, int sockfd)
+{
+	struct sockaddr_in printSock;
+        socklen_t addrLen = sizeof(struct sockaddr);
+        getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+        fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }

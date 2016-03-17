@@ -30,7 +30,7 @@ struct Segment
  *
  * return 0, if no error; otherwise, a negative number indicating the error
  */
-int sendMessage (char* desthost, int destPort, char* message);
+int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort);
 
 /*
  * Reads client message and responds accordingly
@@ -80,7 +80,8 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd);
 /*
  * Creates the listening socket
  */
-int ListenSockCreation(int port, struct sockaddr_in *address);
+int sockCreation(char * hostName, int port, struct sockaddr_in *dest);
+
 
 /*
  * Prints the host information to the terminal
@@ -91,11 +92,6 @@ void printHostInfo();
  * Handle the shut down signal
  */
 void handler(int param);
-
-/*
- * Prompt user to input message to be send from sender to proxy
- */
-char * getUserInput();
 
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
