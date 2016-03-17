@@ -29,8 +29,7 @@
 	struct sockaddr_in rcvAddress; // sender's address
 	struct sockaddr_in senderAddress;
 	socklen_t addr_size = sizeof(senderAddress);
-	char buffer[256];
-	bzero(buffer, 256);
+	//SegmentP thisSegment = (SegmentP) malloc (sizeof(struct Segment));
 /*
  	if (argc != 7)
 	{
@@ -68,16 +67,21 @@
 //// END OF TEST///////////////////
 	while(1)
 	{
-		errR = recvfrom(sock, buffer, 256, 0, (struct sockaddr*)&senderAddress, &addr_size);
+		SegmentP thisSegment = (SegmentP) malloc (sizeof(struct Segment));
+
+		errR = recvfrom(sock, &thisSegment, sizeof(thisSegment), 0, (struct sockaddr*)&senderAddress, &addr_size);
 		
 		if(errR == -1){
 			fprintf(stderr, "%s\n", strerror(errno));
 		}
 		printf("hi mom\n");
 
+		//getting the same segfault from the below printf statement
+		//printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
 
-		printf("segment Message is: %s\n", buffer);
+	free(thisSegment);
 	}
+
 		
 	
 	return 0;

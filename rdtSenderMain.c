@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 	char inputMessage[256];
 	bzero(inputMessage, 256); 
 	int processedSeg = 0;
+	
+
 	int i = 0;
 	
 	if (argc != 4)
@@ -64,14 +66,14 @@ int main(int argc, char *argv[])
 		i++;
 	}*/
 
-	while(processedSeg < numOfSegments)
+	while(i < (strlen(inputMessage) - 1))
 	{
-		char *messageSent = parseMessage(i, inputMessage);
-		printf("segment Message = %s\n", messageSent);
-		sendMessage(sockFD, messageSent, proxyHostName, proxyPortNum);
+		SegmentP thisSegment = createSegment(parseMessage(i, inputMessage));
+		//messageSent = parseMessage(i, inputMessage);
+		//printf("segment Message = %s\n", thisSegment->segMessage);
+		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
 		i++;
-		processedSeg++;	
-		free(messageSent);
+		free(thisSegment);
 	}
 	return 0;
 }
