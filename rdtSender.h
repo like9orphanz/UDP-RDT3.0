@@ -30,7 +30,7 @@ struct Segment
  *
  * return 0, if no error; otherwise, a negative number indicating the error
  */
-int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort);
+int sendMessage(int sockFD, char *buffer, char * serverName, int serverPort);
 
 /*
  * Reads client message and responds accordingly

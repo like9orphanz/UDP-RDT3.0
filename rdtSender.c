@@ -266,11 +266,11 @@ SegmentP createSegment(char *parsedChars)
 /*
  * Parse the message obtained from user
  */
-char * parseMessage(int count, char *message)
+char *parseMessage(int count, char *message)
 {
 	int i;
 	int a = 0;
-	char *parsedChars = (char *) malloc(sizeof(char) * 4);
+	char *parsedChars = malloc(256);
 
 	for ((i = count * 4) ; (i < (count * 4) + 4) ; i++) 
 	{	
@@ -290,9 +290,11 @@ char * parseMessage(int count, char *message)
 
 	return parsedChars;
 }
-int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort)
+int sendMessage(int sockFD, char *buffer, char * serverName, int serverPort)
 {
         printf("Sending request\n");
+	printf("sendMessage function: %s\n", buffer);
+	printf("sizeof buffer = %d\n", sizeof(buffer));
         int errorCheck = 0;
         struct hostent * htptr;
         struct sockaddr_in dest;
@@ -308,7 +310,14 @@ int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverP
         dest.sin_port = htons(serverPort);
         dest.sin_addr = *((struct in_addr *)htptr->h_addr);
 
-        errorCheck = sendto(sockFD, (struct Segment*)&thisSegment, sizeof(thisSegment), 0, (const struct sockaddr *)&dest, sizeof(dest));
+        errorCheck = sendto(sockFD, buffer, 256, 0, (const struct sockaddr *)&dest, sizeof(dest));
+
+	if(errorCheck == -1){
+		fprintf(stderr, "%s\n", strerror(errno));
+	}
+
+	fprintf(stderr, "SENT\n");
+
 
         return errorCheck;
 }

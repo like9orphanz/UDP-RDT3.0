@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <errno.h>
 
  int main(int argc, char *argv[])
 {
@@ -28,7 +29,8 @@
 	struct sockaddr_in rcvAddress; // sender's address
 	struct sockaddr_in senderAddress;
 	socklen_t addr_size = sizeof(senderAddress);
-	sentSegmentP thisSentSegment = malloc(sizeof(struct sentSegment));
+	char buffer[256];
+	bzero(buffer, 256);
 /*
  	if (argc != 7)
 	{
@@ -45,12 +47,12 @@
 	//lostPercent = atoi(argv[4]);
 	//delayedPercent = atoi(argv[5]);
 	//errorPercent = atoi(argv[6]);
-	
-	/*sockFD = sockCreation(rcvHostName, rcvPort, &rcvAddress);
+/*	
+	sockFD = sockCreation(rcvHostName, rcvPort, &rcvAddress);
 	int proxSockFD = sockCreation(rcvHostName, portNum, &proxAddress);
 	printHostInfo();
 	portInfo(&proxAddress, proxSockFD); 
-	*/
+*/	
 
 ///// This is going to be a test run ///////////////
 
@@ -61,14 +63,20 @@
 	proxAddress.sin_port = htons(portNum);
 
 	bind(sock, (struct sockaddr *) &proxAddress, sizeof(proxAddress));
-
+	ssize_t errR;
 	
 //// END OF TEST///////////////////
 	while(1)
 	{
-		recvfrom(sock, thisSentSegment, sizeof(thisSentSegment), 0, (struct sockaddr*)&rcvAddress, &addr_size);
+		errR = recvfrom(sock, buffer, 256, 0, (struct sockaddr*)&senderAddress, &addr_size);
+		
+		if(errR == -1){
+			fprintf(stderr, "%s\n", strerror(errno));
+		}
+		printf("hi mom\n");
 
-		printf("segment Message is: %s\n", thisSentSegment->segMessage);
+
+		printf("segment Message is: %s\n", buffer);
 	}
 		
 	

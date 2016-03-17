@@ -1,4 +1,4 @@
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -lm
 CC = gcc
 
 all : rdtSender rdtReceiver rdtProxy

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in sendAddress;
 	char inputMessage[256];
 	bzero(inputMessage, 256); 
-
+	int processedSeg = 0;
 	int i = 0;
 	
 	if (argc != 4)
@@ -49,9 +49,11 @@ int main(int argc, char *argv[])
 	fgets(inputMessage, 256, stdin);
 	inputMessage[strlen(inputMessage)-1] = '\0';
 	printf("message = %s\n", inputMessage);
-
+	int messageLength = strlen(inputMessage);
+	int numOfSegments = ceil((messageLength + 5)/10); //5 for the header
+	printf("numofSegments = %d\n", numOfSegments);
 	// Parse message into segments
-	while (i < strlen(inputMessage) - 1)
+/*	while (i < strlen(inputMessage) - 1)
 	{	
 		printf("in while\n");
 		SegmentP thisSegment = createSegment(parseMessage(i, inputMessage));
@@ -60,6 +62,16 @@ int main(int argc, char *argv[])
 		free(thisSegment);
 		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
 		i++;
+	}*/
+
+	while(processedSeg < numOfSegments)
+	{
+		char *messageSent = parseMessage(i, inputMessage);
+		printf("segment Message = %s\n", messageSent);
+		sendMessage(sockFD, messageSent, proxyHostName, proxyPortNum);
+		i++;
+		processedSeg++;	
+		free(messageSent);
 	}
 	return 0;
 }
