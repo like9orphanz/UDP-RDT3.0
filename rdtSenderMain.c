@@ -66,11 +66,12 @@ int main(int argc, char *argv[])
 		i++;
 	}*/
 
-	while(i < (strlen(inputMessage) - 1))
+	while(i < (strlen(inputMessage) / 4))
 	{
-		SegmentP thisSegment = createSegment(parseMessage(i, inputMessage));
+		SegmentP *thisSegment = malloc(sizeof(SegmentP));
+		thisSegment = createSegment((parseMessage(i, inputMessage)), thisSegment);
 		//messageSent = parseMessage(i, inputMessage);
-		//printf("segment Message = %s\n", thisSegment->segMessage);
+		printf("segment Message before function call  = %s\n", thisSegment->segMessage);
 		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
 		i++;
 		free(thisSegment);

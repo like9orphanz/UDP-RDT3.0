@@ -11,15 +11,13 @@
 
 #include <netinet/in.h>
 
-typedef struct Segment *SegmentP;
-
-struct Segment
+typedef struct Segment
 {
 	int ack;
 	int seqNum;
 	int messageSize;
 	char segMessage[10];
-};
+}SegmentP;
 
 /*
  * Sends a message to an RDT receiver on a specified host and port.
@@ -30,7 +28,7 @@ struct Segment
  *
  * return 0, if no error; otherwise, a negative number indicating the error
  */
-int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort);
+int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort);
 
 /*
  * Reads client message and responds accordingly
@@ -96,7 +94,7 @@ void handler(int param);
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
  */
-SegmentP createSegment(char *parsedChars);
+SegmentP *createSegment(char *parsedChars, SegmentP *thisSegment);
 
 /*
  * Parse the message obtained from user in 'getUserInput()'

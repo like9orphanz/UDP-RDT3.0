@@ -248,11 +248,9 @@ int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
  */
-SegmentP createSegment(char *parsedChars)
+SegmentP *createSegment(char *parsedChars, SegmentP *thisSegment)
 {
 	if (parsedChars == 0x00) return  0x00;
-
-	SegmentP thisSegment = (SegmentP) malloc (sizeof(struct Segment));
 
 	thisSegment->ack = 0;
 	thisSegment->seqNum = 0;
@@ -261,6 +259,7 @@ SegmentP createSegment(char *parsedChars)
 	//thisSegment->segMessage = parsedChars;
 	strcpy(thisSegment->segMessage, parsedChars);
 	free(parsedChars);
+	printf("after free and before return = %s\n", thisSegment->segMessage);
 	return thisSegment;
 }
 
@@ -291,11 +290,11 @@ char *parseMessage(int count, char *message)
 
 	return parsedChars;
 }
-int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverPort)
+int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort)
 {
         printf("Sending request\n");
 	//getting a segfault from the below print statement
-	//printf("sendMessage function: %s\n", thisSegment->segMessage);
+	printf("sendMessage function: %s\n", thisSegment->segMessage);
         int errorCheck = 0;
         struct hostent * htptr;
         struct sockaddr_in dest;
@@ -311,14 +310,11 @@ int sendMessage(int sockFD, SegmentP thisSegment, char * serverName, int serverP
         dest.sin_port = htons(serverPort);
         dest.sin_addr = *((struct in_addr *)htptr->h_addr);
 
-        errorCheck = sendto(sockFD, (struct Segment *)&thisSegment, (1024+sizeof(thisSegment)), 0, (const struct sockaddr *)&dest, sizeof(dest));
+        errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
 
 	if(errorCheck == -1){
 		fprintf(stderr, "%s\n", strerror(errno));
 	}
-
-	fprintf(stderr, "SENT\n");
-
 
         return errorCheck;
 }

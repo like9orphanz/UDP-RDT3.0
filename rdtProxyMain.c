@@ -67,9 +67,9 @@
 //// END OF TEST///////////////////
 	while(1)
 	{
-		SegmentP thisSegment = (SegmentP) malloc (sizeof(struct Segment));
+		SegmentP *thisSegment = malloc (sizeof(SegmentP));
 
-		errR = recvfrom(sock, &thisSegment, sizeof(thisSegment), 0, (struct sockaddr*)&senderAddress, &addr_size);
+		errR = recvfrom(sock, thisSegment, sizeof(SegmentP), 0, (struct sockaddr*)&senderAddress, &addr_size);
 		
 		if(errR == -1){
 			fprintf(stderr, "%s\n", strerror(errno));
@@ -77,9 +77,7 @@
 		printf("hi mom\n");
 
 		//getting the same segfault from the below printf statement
-		//printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
-
-	free(thisSegment);
+		printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
 	}
 
 		
