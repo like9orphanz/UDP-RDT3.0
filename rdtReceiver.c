@@ -85,10 +85,10 @@ int sendRequest(int sockFD, char * request, char * serverName, int serverPort)
  * 
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int receiveResponse(int sockFD, char * response, int size)
+int receiveResponse(int sockFD, recvSegmentP *thisSegment)
 {
 	int errorCheck = 0;
-	errorCheck = recvfrom(sockFD, response, size, 0, NULL, NULL);
+	errorCheck = recvfrom(sockFD, thisSegment, sizeof(recvSegmentP), 0, NULL, NULL);
 	return errorCheck;	
 }
 

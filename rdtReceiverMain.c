@@ -21,5 +21,13 @@ int main(int argc, char *argv[])
 	sockFD = sockCreation(atoi(argv[1]), &rcvAddress);
 	printHostInfo();
 	portInfo(&rcvAddress, sockFD);
+
+	while(1)
+	{
+		recvSegmentP *thisSegment = malloc(sizeof(recvSegmentP));
+		receiveResponse(sockFD, thisSegment);
+		printf("recvSegment = %s\n", thisSegment->segMessage);
+		free(thisSegment);
+	}
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include "rdtSender.h"
+#include "rdtProxy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -82,4 +83,32 @@ int createSocket()
 	socklen_t addrSize = sizeof(struct sockaddr_in);
 	getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
 	return sockfd;
+}
+int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int serverPort)
+{
+	printf("Sending request\n");
+	printf("sendMessage function: %s\n", thisSegment->segMessage);
+        int errorCheck = 0;
+        struct hostent * htptr;
+        struct sockaddr_in dest;
+
+        if((htptr = gethostbyname(serverName)) == NULL)
+        {
+                fprintf(stderr, "Invalid host name\n");
+                return -1;
+        }
+
+        memset(&dest, 0, sizeof(dest));
+        dest.sin_family = AF_INET;
+        dest.sin_port = htons(serverPort);
+        dest.sin_addr = *((struct in_addr *)htptr->h_addr);
+
+        errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
+
+        if(errorCheck == -1){
+                fprintf(stderr, "%s\n", strerror(errno));
+        }
+
+        return errorCheck;
+
 }

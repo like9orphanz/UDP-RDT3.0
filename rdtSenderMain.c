@@ -20,7 +20,7 @@
 int main(int argc, char *argv[])
 {	
 	int portNum, proxyPortNum, sockFD, i = 0;
-	char *proxyHostName, *message;
+	char *proxyHostName;
 	struct sockaddr_in proxAddress, sendAddress;
 	socklen_t addr_size = sizeof(proxAddress);
 	char inputMessage[256];

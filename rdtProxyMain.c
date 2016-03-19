@@ -7,9 +7,7 @@
  *
  * Uses rdtProxy.c to pass messages from server to client 
  */
-
-#include "rdtProxy.h"
-#include "rdtSender.h" 
+#include "rdtProxy.h" 
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -47,18 +45,28 @@
 	int proxSockFD = sockCreation(rcvHostName, portNum, &proxAddress);
 	printHostInfo();
 	portInfo(&proxAddress, proxSockFD); 
+	
+
 
 	while(1)
 	{
-		SegmentP *thisSegment = malloc (sizeof(SegmentP));
-		recvfrom(proxSockFD, thisSegment, sizeof(SegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
+		sentSegmentP *thisSegment = malloc (sizeof(sentSegmentP));
+		recvfrom(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
 		printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
 
 		if(thisSegment->ack == 0)
 			thisSegment->ack = 1;
 
-		sendto(proxSockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
+		sendto(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
+
+		
+		//just testing stuff out
+		sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
+		free(thisSegment);
 
 	}
+
+
+	
 	return 0;
 }

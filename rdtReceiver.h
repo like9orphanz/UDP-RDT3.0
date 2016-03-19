@@ -9,6 +9,15 @@
  #ifndef _RDT_RECEIVER_H
  #define _RDT_RECEIVER_H
 
+typedef struct Segment
+{
+	int ack;
+	int seqNum;
+	int messageSize;
+	char segMessage[10];
+}recvSegmentP;
+
+
 /*
  * Receives a message from an RDT sender on a specified port.
  *
@@ -46,7 +55,7 @@ int sendRequest(int sockFD, char * request, char * serverName, int serverPort);
  * 
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int receiveResponse(int sockFD, char * response, int size);
+int receiveResponse(int sockFD, recvSegmentP *thisSegment);
 
 /*
  * Prints the response to the screen in a formatted way.

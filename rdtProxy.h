@@ -1,15 +1,15 @@
 #ifndef _RDTPROXY_H
 #define _RDTPROXY_H
 
-typedef struct sentSegment *sentSegmentP;
 
-struct sentSegment
+
+typedef struct sentSegment
 {
 	int ack;
 	int seqNum;
 	int messageSize;
-	char *segMessage;
-};
+	char segMessage[10];
+}sentSegmentP;
 
 
 
@@ -23,4 +23,5 @@ void printHostInfo();
  */
 int createSocket();
 
+int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int serverPort);
 #endif
