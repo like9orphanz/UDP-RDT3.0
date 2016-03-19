@@ -19,62 +19,46 @@
 
 int main(int argc, char *argv[])
 {	
-	int portNum, proxyPortNum, sockFD;
+	int portNum, proxyPortNum, sockFD, i = 0;
 	char *proxyHostName, *message;
-	struct sockaddr_in proxAddress;
-	struct sockaddr_in sendAddress;
+	struct sockaddr_in proxAddress, sendAddress;
+	socklen_t addr_size = sizeof(proxAddress);
 	char inputMessage[256];
 	bzero(inputMessage, 256); 
-	int processedSeg = 0;
-	
-
-	int i = 0;
 	
 	if (argc != 4)
 	{
-		printf("Rerun rdtSender with the correct command line arguments\n");
+		printf("Run with <rdtSender port> <proxyHostName> <rdtProxy port>\n");
 		exit(-1);
 	}
 	
 	proxyHostName = (char *) malloc (sizeof(char) * 1024);
-
 	portNum = atoi(argv[1]);
 	strcpy(proxyHostName, argv[2]);
 	proxyPortNum = atoi(argv[3]);
-
 	sockFD = createSocket();
 	int sendSockFD = sockCreation(proxyHostName, portNum, &sendAddress);
         printHostInfo();
         portInfo(&sendAddress, sendSockFD);
-
 	printf("Enter a Message: ");
 	fgets(inputMessage, 256, stdin);
 	inputMessage[strlen(inputMessage)-1] = '\0';
-	printf("message = %s\n", inputMessage);
-	int messageLength = strlen(inputMessage);
-	int numOfSegments = ceil((messageLength + 5)/10); //5 for the header
-	printf("numofSegments = %d\n", numOfSegments);
-	// Parse message into segments
-/*	while (i < strlen(inputMessage) - 1)
-	{	
-		printf("in while\n");
-		SegmentP thisSegment = createSegment(parseMessage(i, inputMessage));
-		if (thisSegment == 0x00) break;
-		printf("thisSegment->segMessage @ %d = %s\n", i, thisSegment->segMessage);
-		free(thisSegment);
-		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
-		i++;
-	}*/
 
 	while(i < (strlen(inputMessage) / 4))
 	{
 		SegmentP *thisSegment = malloc(sizeof(SegmentP));
 		thisSegment = createSegment((parseMessage(i, inputMessage)), thisSegment);
-		//messageSent = parseMessage(i, inputMessage);
-		printf("segment Message before function call  = %s\n", thisSegment->segMessage);
+		printf("segment Message = %s\n", thisSegment->segMessage);
 		sendMessage(sockFD, thisSegment, proxyHostName, proxyPortNum);
-		i++;
 		free(thisSegment);
+		i++;
 	}
+	
+	SegmentP *recvSegment = malloc(sizeof(SegmentP));
+	printf("ack before i recvfrom = %d\n", recvSegment->ack);
+	recvfrom(sockFD, recvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
+
+	printf("proxy sent back ack\n");
+	printf("ack after i recvfrom = %d\n", recvSegment->ack);
 	return 0;
 }
