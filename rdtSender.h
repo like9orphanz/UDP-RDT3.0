@@ -111,4 +111,25 @@ SegmentP *createSegment(int i, char *parsedChars, SegmentP *thisSegment);
  */
 char *parseMessage(int count, char *message);
 
+/*
+ * Detects a timeout in receiving an ack from the receiver
+ */
+int runTimer(int sockFD);
+
+/*
+ * Appropriatly handles any valid output from runTimer()
+ */
+void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, int selectVal);
+
+/*
+ * Make sure the number of command line parameters entered
+ * by the user is correct
+ */
+void checkArgCount(int argc);
+
+/*
+ * Get the message to be sent to receiver from the user 
+ */
+char *getMessage();
+
 #endif 

@@ -36,21 +36,10 @@
 int main(int argc, char *argv[])
 {	
 	int portNum, proxyPortNum, sockFD, selVal, i = 0;
-	char *proxyHostName;
+	char *proxyHostName, *inputMessage;
 	struct sockaddr_in proxAddress, sendAddress;
-	char inputMessage[256];
-	fd_set set;
-	struct timeval timeout;
-	//time_t start, end;
-
-	socklen_t addr_size = sizeof(proxAddress);
-	bzero(inputMessage, 256);
 	
-	if (argc != 4)
-	{
-		printf("Run with <rdtSender port> <proxyHostName> <rdtProxy port>\n");
-		exit(-1);
-	}
+	checkArgCount(argc);
 	
 	proxyHostName = (char *) malloc (sizeof(char) * 1024);
 	portNum = atoi(argv[1]);
@@ -60,40 +49,21 @@ int main(int argc, char *argv[])
 	int sendSockFD = sockCreation(proxyHostName, portNum, &sendAddress);
     printHostInfo();
     portInfo(&sendAddress, sendSockFD);
-	printf("Enter a Message: ");
-	fgets(inputMessage, 256, stdin);
-	inputMessage[strlen(inputMessage)-1] = '\0';
+	inputMessage = getMessage();	
+
 	while (i < (strlen(inputMessage) / 4))
 	{	
 		// Send segment
 		SegmentP *sendSegment = malloc(sizeof(SegmentP));
 		sendSegment = createSegment(i, (parseMessage(i, inputMessage)), sendSegment);
-		printf("segment Message = %s\n", sendSegment->segMessage);
+		//printf("segment Message = %s\n", sendSegment->segMessage);
 		sendMessage(sockFD, sendSegment, proxyHostName, proxyPortNum);
 		
-		// Wait on ack, maximum of three seconds
+		// Wait on ack, maximum of 5 seconds
 		SegmentP *rcvSegment = malloc(sizeof(SegmentP));
-		//printf("ack before i recvfrom = %d\n", rcvSegment->ack);
-		
-		FD_ZERO(&set);
-		FD_SET(sockFD, &set);
-		timeout.tv_sec = 5;
-		timeout.tv_usec = 0; 
-		selVal = select(sockFD + 1, &set, NULL, NULL, &timeout);
-		if (selVal == -1)
-		{
-			perror("select failed\n");
-			return -1;
-		}
-		else if (selVal == 1)
-		{
-			recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
-			printf("proxy sent back ack\n");
-			printf("ack after i recvfrom = %d\n", rcvSegment->ack);
-			i++;
-		}
-		else
-			printf("Ack wait timed out, resending packet\n");
+		selVal = runTimer(sockFD);
+		handleTimerResult(sockFD, proxAddress, rcvSegment, selVal);
+		if (selVal == 1) i++;
 		
 		free(sendSegment);
 		free(rcvSegment); 

@@ -88,7 +88,7 @@
 		else
 		{
 			printf("puttin her to sleep\n");
-			sleep(10);	
+			sleep(7);	
 		}
 		free(thisSegment);
 	}

@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/times.h>
 #include <netinet/in.h>
 #include <errno.h>
 #include <netdb.h>
@@ -324,4 +325,73 @@ int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int server
 		fprintf(stderr, "%s\n", strerror(errno));
 
     return errorCheck;
+}
+
+/*
+ * Detects a timeout in receiving an ack from the receiver
+ */
+int runTimer(int sockFD)
+{
+	int selectVal;
+ 	fd_set set;
+	struct timeval timeout;
+
+	FD_ZERO(&set);
+	FD_SET(sockFD, &set);
+	timeout.tv_sec = 5;
+	timeout.tv_usec = 0; 
+	
+	selectVal = select(sockFD + 1, &set, NULL, NULL, &timeout);
+
+	if (selectVal == -1)
+	{
+		perror("select failed\n");
+		exit(-1);
+	}
+
+	return selectVal;
+}
+
+ /*
+  * Appropriatly handles any valid output from runTimer()
+  */
+void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, int selectVal)
+{
+	socklen_t addr_size = sizeof(proxAddress);
+	if (selectVal == 1)
+	{
+		recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
+		printf("proxy sent back ack\n");
+		printf("ack after i recvfrom = %d\n", rcvSegment->ack);	
+	}
+	else
+		printf("Ack wait timed out, resending packet\n");
+}
+
+/*
+ * Make sure the number of command line parameters entered
+ * by the user is correct
+ */
+void checkArgCount(int argc)
+{
+	if (argc != 4)
+	{
+		printf("Run with <rdtSender port> <proxyHostName> <rdtProxy port>\n");
+		exit(-1);
+	}
+}
+
+/*
+ * Get the message to be sent to receiver from the user 
+ */
+char *getMessage()
+{
+	char *inputMessage = (char *) malloc(sizeof(char) * 256);
+	bzero(inputMessage, 256);
+
+	printf("Enter a Message: ");
+	fgets(inputMessage, 256, stdin);
+	inputMessage[strlen(inputMessage)-1] = '\0';
+
+	return inputMessage;
 }
