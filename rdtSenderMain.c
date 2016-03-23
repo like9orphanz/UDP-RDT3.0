@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/times.h>
 #include <netinet/in.h>
 #include <errno.h>
 #include <netdb.h>
@@ -34,14 +35,16 @@
 
 int main(int argc, char *argv[])
 {	
-	int portNum, proxyPortNum, sockFD, i = 0;
+	int portNum, proxyPortNum, sockFD, selVal, i = 0;
 	char *proxyHostName;
 	struct sockaddr_in proxAddress, sendAddress;
 	char inputMessage[256];
-	time_t start, end;
+	fd_set set;
+	struct timeval timeout;
+	//time_t start, end;
 
 	socklen_t addr_size = sizeof(proxAddress);
-	bzero(inputMessage, 256); 
+	bzero(inputMessage, 256);
 	
 	if (argc != 4)
 	{
@@ -70,24 +73,28 @@ int main(int argc, char *argv[])
 		
 		// Wait on ack, maximum of three seconds
 		SegmentP *rcvSegment = malloc(sizeof(SegmentP));
-		printf("ack before i recvfrom = %d\n", rcvSegment->ack);
-		/*
-		 * THIS IS THE PROBLEM, CANT TIME THE TIME TO RECIEVE BECAUSE
-		 * IM MEASURING TIME AFTER recvfrom() BUT THE PROCESS HANGS BECAUSE
-		 * recvfrom() IS A BLOCKING CALL
-		 */
-		time(&start);
-		recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
-		time(&end);
-		if (difftime(end, start) <= 3)
+		//printf("ack before i recvfrom = %d\n", rcvSegment->ack);
+		
+		FD_ZERO(&set);
+		FD_SET(sockFD, &set);
+		timeout.tv_sec = 5;
+		timeout.tv_usec = 0; 
+		selVal = select(sockFD + 1, &set, NULL, NULL, &timeout);
+		if (selVal == -1)
 		{
+			perror("select failed\n");
+			return -1;
+		}
+		else if (selVal == 1)
+		{
+			recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
 			printf("proxy sent back ack\n");
 			printf("ack after i recvfrom = %d\n", rcvSegment->ack);
 			i++;
 		}
 		else
 			printf("Ack wait timed out, resending packet\n");
-
+		
 		free(sendSegment);
 		free(rcvSegment); 
 	}

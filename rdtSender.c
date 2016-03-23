@@ -45,7 +45,7 @@ void handler(int param)
 void printHostInfo()
 {
 	char hostname[1024];
-        hostname[1023] = '\0';
+    hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -62,7 +62,7 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
 	socklen_t addrLen = sizeof(struct sockaddr);
-        getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+    getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
 	fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }
 
@@ -265,7 +265,7 @@ SegmentP *createSegment(int i, char *parsedChars, SegmentP *thisSegment)
 	//thisSegment->segMessage = parsedChars;
 	strcpy(thisSegment->segMessage, parsedChars);
 	free(parsedChars);
-	printf("after free and before return = %s\n", thisSegment->segMessage);
+	//printf("after free and before return = %s\n", thisSegment->segMessage);
 	return thisSegment;
 }
 
@@ -302,7 +302,7 @@ char *parseMessage(int count, char *message)
  */ 
 int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort)
 {
-	printf("sendMessage function: %s\n", thisSegment->segMessage);
+	//printf("sendMessage function: %s\n", thisSegment->segMessage);
     int errorCheck = 0;
     struct hostent * htptr;
     struct sockaddr_in dest;
@@ -325,4 +325,3 @@ int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int server
 
     return errorCheck;
 }
-
