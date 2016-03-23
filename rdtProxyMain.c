@@ -1,11 +1,15 @@
-/*
- * RDT-UDP3.0
- * rdtProxyMain.c
- *
+/* * * * * * * * * */
+/* rdtSenderMain.c */
+/* * * * * * * * * */
+
+/*     
  * Sam Stein
  * Joshua Wright
  *
- * Uses rdtProxy.c to pass messages from server to client 
+ * Systems and Networks 2
+ * Project 4
+ *
+ * The main function which uses the functions from rdtSender.h
  */
 
 #include "rdtProxy.h" 

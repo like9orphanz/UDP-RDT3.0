@@ -1,3 +1,16 @@
+/* * * * * * * */
+/* rdtProxy.c */
+/* * * * * * * */    
+
+/* Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
+ * Project 4
+ *
+ * Implementation of functions described by rdtProxy.h
+ */
+
 #include "rdtSender.h"
 #include "rdtProxy.h"
 #include <stdio.h>

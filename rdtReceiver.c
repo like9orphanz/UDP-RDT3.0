@@ -1,10 +1,15 @@
-/*
- *	File Name: TCPclient.c
- *	Author: Joshua Wright
- *	Project: 1
- *
- */
+/* * * * * * * * */
+/* rdtReceiver.c */
+/* * * * * * * * */    
 
+/* Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
+ * Project 4
+ *
+ * Implementation of functions described by rdtReceiver.h
+ */
 
 #include "rdtReceiver.h"
 #include <stdio.h>

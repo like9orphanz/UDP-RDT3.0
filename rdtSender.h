@@ -1,9 +1,14 @@
-/*
- * rdtSender.h
- * Systems and Networks II
+/* * * * * * * */
+/* rdtSender.h */
+/* * * * * * * */    
+
+/* Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
  * Project 4
  *
- * This file describes the function(s) to be implemented by an RDT sender
+ * This file describes the functions to be implemented by an RDT sender.
  */
 
 #ifndef _RDTSENDER_H

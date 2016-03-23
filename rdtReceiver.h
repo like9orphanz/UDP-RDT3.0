@@ -1,6 +1,11 @@
-/*
- * rdtReceiver.h
- * Systems and Networks II
+/* * * * * * * * */
+/* rdtReceiver.h */
+/* * * * * * * * */    
+
+/* Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
  * Project 4
  *
  * This file describes the functions to be implemented by an RDT receiver.

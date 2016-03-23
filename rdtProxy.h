@@ -1,3 +1,16 @@
+/* * * * * * * */
+/* rdtProxy.h  */
+/* * * * * * * */    
+
+/* Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
+ * Project 4
+ *
+ * This file describes the functions to be implemented by an RDT sender.
+ */
+
 #ifndef _RDTPROXY_H
 #define _RDTPROXY_H
 
