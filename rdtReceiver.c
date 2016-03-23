@@ -16,9 +16,6 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-void portInfo(struct sockaddr_in *serverAddress, int sockfd);
-int sockCreation(int port, struct sockaddr_in *address);
-
 /*
  *	This program is a TCPclient that communicates to TCPserver. This program uses TCPmain 
  *	to send a certain ammount of messages and tests to see if those messages
@@ -131,6 +128,10 @@ void printHostInfo()
 	fprintf(stderr, "Host Name: %s\n", hostname);
 	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
 }
+
+/*
+ * Create and bind socket
+ */
 int sockCreation(int port, struct sockaddr_in *address)
 {
 	int sock_ls;
@@ -150,17 +151,21 @@ int sockCreation(int port, struct sockaddr_in *address)
 	//binds the socket
 	if(bind(sock_ls, (struct sockaddr *)address, sizeof(*address)) < 0)
         {
-                fprintf(stderr, "Error binding\n");
-                close(sock_ls);
-                exit(1);
+            fprintf(stderr, "Error binding\n");
+            close(sock_ls);
+            exit(1);
         }
 
 	return sock_ls;
 }
+
+/*
+ * Display the port information
+ */
 void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
-        socklen_t addrLen = sizeof(struct sockaddr);
-        getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
-        fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
+    socklen_t addrLen = sizeof(struct sockaddr);
+    getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+    fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }

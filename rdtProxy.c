@@ -17,9 +17,10 @@
 #include <stdint.h>
 #include <unistd.h>
 
-
-
-int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
+/*
+ * Create and bind the socket
+ */
+int sockCreation(char *hostName, int port, struct sockaddr_in *dest)
 {
         int sock_ls;
 
@@ -30,21 +31,19 @@ int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
 
         if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
         {
-                fprintf(stderr, "Error: listen sock failed!");
-                exit(1);
+            fprintf(stderr, "Error: listen sock failed!");
+            exit(1);
         }
 
         if(bind(sock_ls, (struct sockaddr *)dest, sizeof(*dest)) < 0)
         {
-                fprintf(stderr, "Error binding\n");
-                close(sock_ls);
-                exit(1);
+            fprintf(stderr, "Error binding\n");
+            close(sock_ls);
+            exit(1);
         }
 
         return sock_ls;
-
 }
-
 
 /*
  * Print the host information to the terminal
@@ -59,15 +58,17 @@ void printHostInfo()
 	hostptr = gethostbyname(hostname);
 	fprintf(stderr, "Host Name: %s\n", hostname);
 	fprintf(stderr, "IP address: %s\n", inet_ntoa(*(struct in_addr*)hostptr->h_addr));
-
 }
 
+/*
+ * Display the port information to the screen
+ */
 void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
-        socklen_t addrLen = sizeof(struct sockaddr);
-        getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
-        fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
+    socklen_t addrLen = sizeof(struct sockaddr);
+    getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+    fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }
 
 /*
@@ -88,27 +89,72 @@ int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int se
 {
 	printf("Sending request\n");
 	printf("sendMessage function: %s\n", thisSegment->segMessage);
-        int errorCheck = 0;
-        struct hostent * htptr;
-        struct sockaddr_in dest;
+    int errorCheck = 0;
+    struct hostent * htptr;
+    struct sockaddr_in dest;
 
-        if((htptr = gethostbyname(serverName)) == NULL)
-        {
-                fprintf(stderr, "Invalid host name\n");
-                return -1;
-        }
+    if((htptr = gethostbyname(serverName)) == NULL)
+    {
+        fprintf(stderr, "Invalid host name\n");
+        return -1;
+    }
 
-        memset(&dest, 0, sizeof(dest));
-        dest.sin_family = AF_INET;
-        dest.sin_port = htons(serverPort);
-        dest.sin_addr = *((struct in_addr *)htptr->h_addr);
+    memset(&dest, 0, sizeof(dest));
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(serverPort);
+    dest.sin_addr = *((struct in_addr *)htptr->h_addr);
 
-        errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
+    errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
 
-        if(errorCheck == -1){
-                fprintf(stderr, "%s\n", strerror(errno));
-        }
+    if(errorCheck == -1)
+    {
+        fprintf(stderr, "%s\n", strerror(errno));
+    }
 
-        return errorCheck;
+    return errorCheck;
+}
 
+/*
+ * 'Roll dice' to see if segment is lost, delayed or corrupt
+ *
+ * Paramters :
+ * pLost    - User entered percentage lost
+ * pDelayed - User entered perecentage delayed
+ * pError   - User entered percentage error (corrupt packet)
+ * 
+ * Returns :
+ * 0 - Neither lost, delayed or an error in packet transmission
+ * 1 - Packet is lost
+ * 2 - Packet is delayed
+ * 3 - Error with packet (corrupt)
+ */
+int isLostDelayedCorrupt(double lost, double delayed, double error)
+{
+    int randNum, pLost, pDelayed, pError;
+    randNum = rand() % 100;
+    pLost = (int) lost;
+    pDelayed = (int) delayed;
+    pError = (int) error;
+    printf("%d - ", randNum);
+
+    if (randNum <= pLost)
+    {
+        printf("lose this packet\n");
+        return 1;
+    }
+    else if (randNum <= (pLost + pDelayed))
+    {
+        printf("delay this packet\n");
+        return 2;
+    }
+    else if (randNum <= (pLost + pDelayed + pError))
+    {
+        printf("corrupt this packet\n");
+        return 3;
+    }
+    else
+    {
+        printf("packet is just fine, thank you\n");
+        return 0;
+    }
 }

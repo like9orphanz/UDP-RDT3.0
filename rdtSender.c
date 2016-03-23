@@ -1,11 +1,14 @@
-/* 
- * rdtSender.c 
- *     
- * Sam Stein
+/* * * * * * * */
+/* rdtSender.c */
+/* * * * * * * */    
+
+/* Sam Stein
  * Joshua Wright
  *
  * Systems and Networks 2
  * Project 4
+ *
+ * Implementation of functions described by rdtSender.h
  */
 
 #include "rdtSender.h"
@@ -209,16 +212,19 @@ int getLoad(char *store)
  * Creates the listening socket
  */
 int createSocket()
-{
-	int sockfd;
+{	int sockfd;
         if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-                fprintf(stderr, "ERROR opening socket");
+            fprintf(stderr, "ERROR opening socket");
 
         struct sockaddr_in printSock;
         socklen_t addrSize = sizeof(struct sockaddr_in);
         getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
         return sockfd;
 }
+
+/*
+ * Create the socket
+ */
 int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
 {
 	int sock_ls;
@@ -230,31 +236,31 @@ int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
 
 	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
         {
-                fprintf(stderr, "Error: listen sock failed!");
-                exit(1);
+            fprintf(stderr, "Error: listen sock failed!");
+            exit(1);
         }
 
 	if(bind(sock_ls, (struct sockaddr *)dest, sizeof(*dest)) < 0)
         {
-                fprintf(stderr, "Error binding\n");
-                close(sock_ls);
-                exit(1);
+            fprintf(stderr, "Error binding\n");
+            close(sock_ls);
+            exit(1);
         }
 
 	return sock_ls;
-
 }					
 
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
  */
-SegmentP *createSegment(char *parsedChars, SegmentP *thisSegment)
+SegmentP *createSegment(int i, char *parsedChars, SegmentP *thisSegment)
 {
 	if (parsedChars == 0x00) return  0x00;
 
-	thisSegment->ack = 0;
-	thisSegment->seqNum = 0;
-	thisSegment->messageSize = 0;
+
+	thisSegment->ack = i%2;
+	thisSegment->seqNum = i;
+	thisSegment->messageSize = strlen(parsedChars);
 
 	//thisSegment->segMessage = parsedChars;
 	strcpy(thisSegment->segMessage, parsedChars);
@@ -290,32 +296,33 @@ char *parseMessage(int count, char *message)
 
 	return parsedChars;
 }
+
+/*
+ * Send message to the proxy
+ */ 
 int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort)
 {
-        printf("Sending request\n");
-	//getting a segfault from the below print statement
 	printf("sendMessage function: %s\n", thisSegment->segMessage);
-        int errorCheck = 0;
-        struct hostent * htptr;
-        struct sockaddr_in dest;
+    int errorCheck = 0;
+    struct hostent * htptr;
+    struct sockaddr_in dest;
 
-        if((htptr = gethostbyname(serverName)) == NULL)
-        {
-                fprintf(stderr, "Invalid host name\n");
-                return -1;
-        }
+    if((htptr = gethostbyname(serverName)) == NULL)
+    {
+        fprintf(stderr, "Invalid host name\n");
+        return -1;
+    }
 
-        memset(&dest, 0, sizeof(dest));
-        dest.sin_family = AF_INET;
-        dest.sin_port = htons(serverPort);
-        dest.sin_addr = *((struct in_addr *)htptr->h_addr);
+    memset(&dest, 0, sizeof(dest));
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(serverPort);
+    dest.sin_addr = *((struct in_addr *)htptr->h_addr);
 
-        errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
+    errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
 
-	if(errorCheck == -1){
+	if(errorCheck == -1)
 		fprintf(stderr, "%s\n", strerror(errno));
-	}
 
-        return errorCheck;
+    return errorCheck;
 }
 

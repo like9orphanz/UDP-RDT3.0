@@ -1,3 +1,18 @@
+/* * * * * * * * * * */
+/* rdtReceiverMain.c */
+/* * * * * * * * * * */
+
+/*     
+ * Sam Stein
+ * Joshua Wright
+ *
+ * Systems and Networks 2
+ * Project 4
+ * UDP-RDT 3.0
+ *
+ * The main function which uses the functions from rdtReceiver.h
+ */
+
 #include "rdtReceiver.h"
 #include <stdio.h>
 #include <sys/socket.h>
@@ -10,7 +25,7 @@
 
 int main(int argc, char *argv[])
 {
-	int portNum, sockFD;
+	int sockFD;
 	struct sockaddr_in rcvAddress;
 	if (argc != 2)
 	{

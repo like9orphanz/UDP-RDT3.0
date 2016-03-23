@@ -17,7 +17,7 @@ typedef struct Segment
 	int seqNum;
 	int messageSize;
 	char segMessage[10];
-}SegmentP;
+} SegmentP;
 
 /*
  * Sends a message to an RDT receiver on a specified host and port.
@@ -76,6 +76,11 @@ int getLoad(char *store);
 void portInfo(struct sockaddr_in *serverAddress, int sockfd);
 
 /*
+ * Create socket
+ */
+int createSocket();
+
+/*
  * Creates the listening socket
  */
 int sockCreation(char * hostName, int port, struct sockaddr_in *dest);
@@ -94,7 +99,7 @@ void handler(int param);
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
  */
-SegmentP *createSegment(char *parsedChars, SegmentP *thisSegment);
+SegmentP *createSegment(int i, char *parsedChars, SegmentP *thisSegment);
 
 /*
  * Parse the message obtained from user in 'getUserInput()'

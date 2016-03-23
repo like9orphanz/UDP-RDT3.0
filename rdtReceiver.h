@@ -9,13 +9,15 @@
  #ifndef _RDT_RECEIVER_H
  #define _RDT_RECEIVER_H
 
+#include <netinet/in.h>
+
 typedef struct Segment
 {
 	int ack;
 	int seqNum;
 	int messageSize;
 	char segMessage[10];
-}recvSegmentP;
+} recvSegmentP;
 
 
 /*
@@ -78,5 +80,15 @@ int closeSocket(int sockFD);
  * Print host information to the screen
  */
 void printHostInfo();
+
+/*
+ * Create and bind socket
+ */
+void portInfo(struct sockaddr_in *serverAddress, int sockfd);
+
+/*
+ * Display the port information
+ */
+int sockCreation(int port, struct sockaddr_in *address);
 
 #endif
