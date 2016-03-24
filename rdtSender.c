@@ -283,14 +283,14 @@ char *parseMessage(int count, char *message)
 	{	
 		if (i != 0)
 		{
-			if (message[i - 1] == '\0') return 0x00;
 			parsedChars[a] = message[i];
 			a++;
 		}
 		else
 		{
-			if (message[i] == '\0') return 0x00;
 			parsedChars[a] = message[i];
+			if (message[i + 1] == '\0') return 0x00;
+
 			a++;
 		}
 	}
@@ -355,7 +355,7 @@ int runTimer(int sockFD)
  /*
   * Appropriatly handles any valid output from runTimer()
   */
-void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, int selectVal)
+void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, SegmentP *thisSegment, char * serverName, int serverPort, int selectVal)
 {
 	socklen_t addr_size = sizeof(proxAddress);
 	if (selectVal == 1)
@@ -366,6 +366,7 @@ void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcv
 	}
 	else
 		printf("Ack wait timed out, resending packet\n");
+		//sendMessage(sockFD, thisSegment, serverName, serverPort);
 }
 
 /*

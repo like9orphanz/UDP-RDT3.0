@@ -119,8 +119,7 @@ int runTimer(int sockFD);
 /*
  * Appropriatly handles any valid output from runTimer()
  */
-void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, int selectVal);
-
+void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, SegmentP *thisSegment, char * serverName, int serverPort, int selectVal);
 /*
  * Make sure the number of command line parameters entered
  * by the user is correct
