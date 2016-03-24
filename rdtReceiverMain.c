@@ -26,7 +26,8 @@
 int main(int argc, char *argv[])
 {
 	int sockFD;
-	struct sockaddr_in rcvAddress;
+	struct sockaddr_in rcvAddress, sendMessage;
+	socklen_t addr_size = sizeof(sendMessage);
 	if (argc != 2)
 	{
 		printf("Rerun with port number as command line argument\n");
@@ -40,8 +41,10 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		recvSegmentP *thisSegment = malloc(sizeof(recvSegmentP));
-		receiveResponse(sockFD, thisSegment);
+		recvfrom(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, &addr_size);
 		printf("recvSegment = %s\n", thisSegment->segMessage);
+		thisSegment->ack = 1;
+		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockADDR *)&sendMessage, sizeof(sendMessage));
 		free(thisSegment);
 	}
 	return 0;

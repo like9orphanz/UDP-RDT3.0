@@ -30,10 +30,11 @@
 	double lostPercent, delayedPercent, errorPercent;
 	char *rcvHostName;
 	struct sockaddr_in proxAddress; //local address
-	// struct sockaddr_in rcvAddress; // sender's address
+	struct sockaddr_in rcvAddress; // sender's address
 	struct sockaddr_in senderAddress;
 	
 	socklen_t addr_size = sizeof(senderAddress);
+	socklen_t rcvaddr_size = sizeof(rcvAddress);
 	srand(time(NULL));
 
  	if (argc != 7)
@@ -65,9 +66,7 @@
 		recvfrom(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
 		printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
 
-		if(thisSegment->ack == 0)
-			thisSegment->ack = 1;
-
+		
 		// 'Roll the di' to see if the network should 'lose', 'delay' or 'corrupt' packet
 		LDC = isLostDelayedCorrupt(lostPercent, delayedPercent, errorPercent);
 		
@@ -81,7 +80,6 @@
 		// Always send so long as packet isn't 'lost'
 		if (LDC != 1)
 		{
-			sendto(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
 			sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
 		}
 		// Request sender to resend 'lost' packet by forcing timeout
@@ -91,6 +89,11 @@
 			sleep(7);	
 		}
 		free(thisSegment);
+
+		sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
+		recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
+		if(rcvSegment->ack == 1)
+			sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
 	}
 
 	return 0;
