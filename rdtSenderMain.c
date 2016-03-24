@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
 	int portNum, proxyPortNum, sockFD, selVal, i = 0;
 	char *proxyHostName, *inputMessage;
 	struct sockaddr_in proxAddress, sendAddress;
-	socklen_t addr_size = sizeof(proxAddress);
 	checkArgCount(argc);
 	
 	proxyHostName = (char *) malloc (sizeof(char) * 1024);

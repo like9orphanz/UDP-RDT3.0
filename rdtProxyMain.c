@@ -81,6 +81,11 @@
 		if (LDC != 1)
 		{
 			sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
+			sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
+			recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
+               		 if(rcvSegment->ack == 1)
+                        	sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));	
+			free(rcvSegment);
 		}
 		// Request sender to resend 'lost' packet by forcing timeout
 		else
@@ -89,11 +94,12 @@
 			sleep(7);	
 		}
 		free(thisSegment);
-
+		/*
 		sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
 		recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
 		if(rcvSegment->ack == 1)
 			sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
+		*/
 	}
 
 	return 0;

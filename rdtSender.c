@@ -361,7 +361,7 @@ void handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcv
 	if (selectVal == 1)
 	{
 		recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
-		printf("proxy sent back ack\n");
+		printf("receivery sent back ack\n");
 		printf("ack after i recvfrom = %d\n", rcvSegment->ack);	
 	}
 	else

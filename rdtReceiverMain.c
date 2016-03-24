@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		recvfrom(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, &addr_size);
 		printf("recvSegment = %s\n", thisSegment->segMessage);
 		thisSegment->ack = 1;
-		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockADDR *)&sendMessage, sizeof(sendMessage));
+		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, sizeof(sendMessage));
 		free(thisSegment);
 	}
 	return 0;
