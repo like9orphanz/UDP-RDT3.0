@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
 	int sockFD;
 	struct sockaddr_in rcvAddress, sendMessage;
 	socklen_t addr_size = sizeof(sendMessage);
+	char printMessage[256];
+	bzero(printMessage, 256);
 	if (argc != 2)
 	{
 		printf("Rerun with port number as command line argument\n");
@@ -46,6 +48,9 @@ int main(int argc, char *argv[])
 		if (thisSegment->isCorrupt == 0)
 		{
 			printf("recvSegment = %s\n", thisSegment->segMessage);
+			strcat(printMessage, thisSegment->segMessage);
+			printf("the entire message on Receiver: %s\n", printMessage);
+
 			if (thisSegment->ack == 1)
 				thisSegment->ack = 0;
 			else 
