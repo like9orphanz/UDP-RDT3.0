@@ -75,17 +75,15 @@
 			;
 		// 'Corrupt' packet
 		if (LDC == 3)
-			;
-			
+			thisSegment->isCorrupt = 1;	
 		// Always send so long as packet isn't 'lost'
 		if (LDC != 1)
 		{
 			sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
 			sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
 			recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
-			if(rcvSegment->ack == 1)
-				printf("Passing ack from Receiver to Sender\n\n");
-				sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
+			printf("Passing ack from Receiver to Sender\n\n");
+			sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
 			free(rcvSegment);
 		}
 		// Request sender to resend 'lost' packet by forcing timeout

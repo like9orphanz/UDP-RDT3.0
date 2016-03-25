@@ -38,15 +38,19 @@ int main(int argc, char *argv[])
 	printHostInfo();
 	portInfo(&rcvAddress, sockFD);
 
-	while(1)
+	while (1)
 	{
+
 		recvSegmentP *thisSegment = malloc(sizeof(recvSegmentP));
 		recvfrom(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, &addr_size);
-		printf("recvSegment = %s\n", thisSegment->segMessage);
-		if (thisSegment->ack == 1)
-			thisSegment->ack = 0;
-		else 
-			thisSegment->ack = 1;
+		if (thisSegment->isCorrupt == 0)
+		{
+			printf("recvSegment = %s\n", thisSegment->segMessage);
+			if (thisSegment->ack == 1)
+				thisSegment->ack = 0;
+			else 
+				thisSegment->ack = 1;
+		}
 		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, sizeof(sendMessage));
 		free(thisSegment);
 	}

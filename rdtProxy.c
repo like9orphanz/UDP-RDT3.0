@@ -151,17 +151,17 @@ int isLostDelayedCorrupt(double lost, double delayed, double error)
 
     if (randNum <= pLost)
     {
-        printf("lose this packet\n");
+        printf("Lose this packet\n");
         return 1;
     }
     else if (randNum <= (pLost + pDelayed))
     {
-        printf("delay this packet\n");
+        printf("Delay this packet\n");
         return 2;
     }
     else if (randNum <= (pLost + pDelayed + pError))
     {
-        printf("corrupt this packet\n");
+        printf("Corrupt this packet\n");
         return 3;
     }
     else

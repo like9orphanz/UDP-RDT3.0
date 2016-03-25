@@ -19,7 +19,7 @@
 typedef struct Segment
 {
 	int ack;
-	int seqNum;
+	int isCorrupt;
 	int messageSize;
 	char segMessage[10];
 } recvSegmentP;

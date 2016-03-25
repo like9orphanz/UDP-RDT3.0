@@ -142,23 +142,23 @@ int sockCreation(int port, struct sockaddr_in *address)
 	int sock_ls;
 	
 	memset(address, 0, sizeof(*address));
-        address->sin_family = AF_INET;
-        address->sin_addr.s_addr = htonl(INADDR_ANY);
-        address->sin_port = htons(port);
+    address->sin_family = AF_INET;
+    address->sin_addr.s_addr = htonl(INADDR_ANY);
+    address->sin_port = htons(port);
 
 	//creates a socket
 	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
         {
-                fprintf(stderr, "Error: listen sock failed!");
-                exit(1);
+            fprintf(stderr, "Error: listen sock failed!");
+            exit(1);
         }
 
 	//binds the socket
 	if(bind(sock_ls, (struct sockaddr *)address, sizeof(*address)) < 0)
         {
-            fprintf(stderr, "Error binding\n");
-            close(sock_ls);
-            exit(1);
+        fprintf(stderr, "Error binding\n");
+        close(sock_ls);
+        exit(1);
         }
 
 	return sock_ls;
