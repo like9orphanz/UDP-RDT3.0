@@ -100,8 +100,7 @@ int createSocket()
 }
 int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int serverPort)
 {
-	printf("Sending request\n");
-	printf("sendMessage function: %s\n", thisSegment->segMessage);
+	printf("Receiver->segMessage: %s\n\n", thisSegment->segMessage);
     int errorCheck = 0;
     struct hostent * htptr;
     struct sockaddr_in dest;
@@ -167,7 +166,7 @@ int isLostDelayedCorrupt(double lost, double delayed, double error)
     }
     else
     {
-        printf("packet is just fine, thank you\n");
+        printf("Pass packet to Receiver as is\n");
         return 0;
     }
 }

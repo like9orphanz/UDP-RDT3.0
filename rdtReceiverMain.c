@@ -43,7 +43,10 @@ int main(int argc, char *argv[])
 		recvSegmentP *thisSegment = malloc(sizeof(recvSegmentP));
 		recvfrom(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, &addr_size);
 		printf("recvSegment = %s\n", thisSegment->segMessage);
-		thisSegment->ack = 1;
+		if (thisSegment->ack == 1)
+			thisSegment->ack = 0;
+		else 
+			thisSegment->ack = 1;
 		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, sizeof(sendMessage));
 		free(thisSegment);
 	}

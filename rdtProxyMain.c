@@ -64,7 +64,7 @@
 	{
 		sentSegmentP *thisSegment = malloc (sizeof(sentSegmentP));
 		recvfrom(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
-		printf("segment Message after recvFrom is: %s\n", thisSegment->segMessage);
+		printf("Sender->segMessage: %s\n", thisSegment->segMessage);
 
 		
 		// 'Roll the di' to see if the network should 'lose', 'delay' or 'corrupt' packet
@@ -83,8 +83,9 @@
 			sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
 			sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
 			recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
-               		 if(rcvSegment->ack == 1)
-                        	sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));	
+			if(rcvSegment->ack == 1)
+				printf("Passing ack from Receiver to Sender\n\n");
+				sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
 			free(rcvSegment);
 		}
 		// Request sender to resend 'lost' packet by forcing timeout
@@ -93,13 +94,8 @@
 			printf("puttin her to sleep\n");
 			sleep(7);	
 		}
+		
 		free(thisSegment);
-		/*
-		sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
-		recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
-		if(rcvSegment->ack == 1)
-			sendto(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (const struct sockaddr *)&senderAddress, sizeof(senderAddress));
-		*/
 	}
 
 	return 0;

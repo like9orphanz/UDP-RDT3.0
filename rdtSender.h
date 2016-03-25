@@ -36,46 +36,6 @@ typedef struct Segment
 int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort);
 
 /*
- * Reads client message and responds accordingly
- */
-int processInfo(char *buffer, char *rcvString);
-
-/*
- * Handle incorrect or invalid formatting
- */
-void unknownError(char *buffer, char *rcvString);
-
-/*
- * Echo the message back to the client
- */
-int echo(char rcvString[256]);
-
-/*
- * Wrap the message in appropriate XML tags
- */
-void changeEcho(char * buffer, char * rcvString);
-
-/*
- * Gracefully shutdown the server
- */
-int pShutdown(char rcvString[256]);
-
-/*
- * Calculate the average server load
- */
-int loadAvg(char rcvString[256]);
-
-/*
- * Wrap the load avg in appropriate XML tags
- */
-void changeLoadAvg(char * buffer, char * rcvString);
-
-/* 
- * Get the current load on the server
- */
-int getLoad(char *store);
-
-/*
  * Prints out the socket port with getsockname()
  */
 void portInfo(struct sockaddr_in *serverAddress, int sockfd);
@@ -104,7 +64,7 @@ void handler(int param);
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
  */
-SegmentP *createSegment(int i, char *parsedChars, SegmentP *thisSegment);
+SegmentP *createSegment(int i, char *parsedChars);
 
 /*
  * Parse the message obtained from user in 'getUserInput()'
