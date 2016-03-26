@@ -131,8 +131,7 @@ SegmentP *createSegment(int i, char *parsedChars)
 
 	thisSegment->ack = i%2;
 	thisSegment->isCorrupt = 0;
-	thisSegment->messageSize = strlen(parsedChars);
-
+	thisSegment->seqNum = i%2;
 	strcpy(thisSegment->segMessage, parsedChars);
 	free(parsedChars);
 

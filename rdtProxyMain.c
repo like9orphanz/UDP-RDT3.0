@@ -26,7 +26,7 @@
 
  int main(int argc, char *argv[])
 {
-	int portNum, rcvPort, sockFD, LDC;
+	int portNum, rcvPort, LDC, proxSockFD;
 	double lostPercent, delayedPercent, errorPercent;
 	char *rcvHostName;
 	struct sockaddr_in proxAddress, senderAddress;
@@ -45,8 +45,7 @@
 	checkLDCRange(lostPercent, delayedPercent, errorPercent);
 	srand(time(NULL));
 	
-	sockFD = createSocket();
-	int proxSockFD = sockCreation(rcvHostName, portNum, &proxAddress);
+	proxSockFD = sockCreation(rcvHostName, portNum, &proxAddress);
 	printHostInfo();
 	portInfo(&proxAddress, proxSockFD); 
 

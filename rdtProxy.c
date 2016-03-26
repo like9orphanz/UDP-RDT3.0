@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <unistd.h>
 
+pthread_mutex_t lock;
+
 /*
  * Create and bind the socket
  */
@@ -170,9 +172,18 @@ int isLostDelayedCorrupt(double lost, double delayed, double error)
         return 0;
     }
 }
-void *delayFunc()
+void *delayFunc(void *data)
 {
-    
+	threadP *thisSegment = (threadP *)data;
+
+	pthread_mutex_unlock(&lock);
+
+	sleep(1);
+
+	sendto(thisSegment->sockFD, &thisSegment->segMessage, sizeof(thisSegment->segMessage), 0, thisSegment->dest, thisSegment->dest_size);
+
+	pthread_exit(0);
+	free(thisSegment);
     
 }
 /*
@@ -184,12 +195,25 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
     socklen_t rcvaddr_size = sizeof(struct sockaddr);
     pthread_t tid;
     pthread_attr_t attr;
-    pthread_attr_init(&attr)
-    pthread_attr_setdetachedstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     pthread_create(&tid, &attr, delayFunc, NULL);
     // Delay packet (need to dispatch a thread)
     if (LDC == 2)
-        ;
+     {
+	printf("delaying packet\n");
+	pthread_mutex_lock(&lock);
+	threadP *threadStuff = malloc(sizeof(threadP));
+	threadStuff->dest = senderAddress;
+	threadStuff->dest_size = addr_size;
+	threadStuff->sockFD = proxSockFD;
+	threadStuff->ack = thisSegment->ack;
+	threadStuff->isCorrupt = thisSegment->isCorrupt;
+	threadStuff->seqNum = thisSegment->seqNum;
+	strncpy(threadStuff->segMessage, thisSegment->segMessage, 10);
+	fprintf(stderr, "threadStuff->segmessage before create: %s\n", threadStuff->segMessage);
+	pthread_create(&tid, &attr, delayFunc, (void *)&threadStuff);	
+     }  	 
     // 'Corrupt' packet
     if (LDC == 3)
         thisSegment->isCorrupt = 1; 

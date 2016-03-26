@@ -24,6 +24,17 @@ typedef struct sentSegment
 	char segMessage[10];
 } sentSegmentP;
 
+typedef struct thread
+{
+	int sockFD;
+	const struct sockaddr *dest;
+	socklen_t dest_size;
+	int ack;
+	int isCorrupt;
+	int seqNum;
+	char segMessage[10];
+}threadP;
+
 /*
  * Create and bind the socket
  */

@@ -1,4 +1,4 @@
-CFLAGS = -g -Wall -lm
+CFLAGS = -g -Wall -lm -lpthread
 CC = gcc
 
 all : rdtSender rdtReceiver rdtProxy
