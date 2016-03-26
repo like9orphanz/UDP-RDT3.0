@@ -20,7 +20,7 @@ typedef struct sentSegment
 {
 	int ack;
 	int isCorrupt;
-	int messageSize;
+	int seqNum;
 	char segMessage[10];
 } sentSegmentP;
 
@@ -64,5 +64,21 @@ int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int se
  * 3 - Error with packet (corrupt)
  */
 int isLostDelayedCorrupt(double lost, double delayed, double error);
+
+/*
+ * Appropriately handle the result of isLostDelayedCorrupt()
+ */
+void handleLDC(int LDC, sentSegmentP *thisSegment, int sockFD, char *rcvHostName, int rcvPort, struct sockaddr *senderAddress, socklen_t addr_size);
+
+/*
+ * Make sure the number of command line parameters entered
+ * by the user is correct
+ */
+void checkArgCount(int argc);
+
+/*
+ * Make sure LDC does not exceed 99%
+ */
+void checkLDCRange(int lost, int delayed, int corrupt);
 
 #endif

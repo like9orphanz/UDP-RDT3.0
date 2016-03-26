@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
 			else 
 				thisSegment->ack = 1;
 		}
-		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, sizeof(sendMessage));
+		printf("proxSeg->isCorrupt = %d\n", thisSegment->isCorrupt);
+		sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, addr_size);
 		free(thisSegment);
 	}
 	return 0;

@@ -225,7 +225,7 @@ int runTimer(int sockFD)
  /*
   * Appropriatly handles any valid output from runTimer()
   */
-int handleTimerResult(int sockFD, struct sockaddr_in proxAddress, SegmentP *rcvSegment, SegmentP *thisSegment, char * serverName, int serverPort, int selectVal)
+int handleTimerResult(int sockFD, struct sockaddr_in *proxAddress, SegmentP *rcvSegment, SegmentP *thisSegment, char * serverName, int serverPort, int selectVal)
 {
 	socklen_t addr_size = sizeof(proxAddress);
 	if (selectVal == 1)

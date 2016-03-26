@@ -35,7 +35,7 @@
 
 int main(int argc, char *argv[])
 {	
-	int portNum, proxyPortNum, sockFD, selVal, corrupt, i = 0;
+	int portNum, proxyPortNum, sockFD, selVal, corrupt, runs, i = 0;
 	char *proxyHostName, *inputMessage;
 	struct sockaddr_in proxAddress, sendAddress;
 	checkArgCount(argc);
@@ -49,8 +49,11 @@ int main(int argc, char *argv[])
     printHostInfo();
     portInfo(&sendAddress, sendSockFD);
 	inputMessage = getMessage();	
-
-	while (i < ((strlen(inputMessage) / 4)+ 1))
+	if ((strlen(inputMessage)%2) == 0)
+		runs = strlen(inputMessage) / 4;
+	else
+		runs = (strlen(inputMessage) / 4) + 1;
+	while (i < runs)
 	{	
 		// Send segment
 		SegmentP *sendSegment = createSegment(i, (parseMessage(i, inputMessage)));
@@ -59,7 +62,7 @@ int main(int argc, char *argv[])
 		// Wait on ack, maximum of 5 seconds
 		SegmentP *rcvSegment = malloc(sizeof(SegmentP));
 		selVal = runTimer(sockFD);
-		corrupt = handleTimerResult(sockFD, proxAddress, rcvSegment, sendSegment, proxyHostName, proxyPortNum, selVal);
+		corrupt = handleTimerResult(sockFD, &proxAddress, rcvSegment, sendSegment, proxyHostName, proxyPortNum, selVal);
 		if (selVal == 1 && corrupt == 0) i++;
 		
 		free(sendSegment);

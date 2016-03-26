@@ -100,7 +100,7 @@ int createSocket()
 }
 int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int serverPort)
 {
-	printf("Receiver->segMessage: %s\n\n", thisSegment->segMessage);
+	printf("Receiver->segMessage: %s\n", thisSegment->segMessage);
     int errorCheck = 0;
     struct hostent * htptr;
     struct sockaddr_in dest;
@@ -149,17 +149,17 @@ int isLostDelayedCorrupt(double lost, double delayed, double error)
     pError = (int) error;
     printf("%d - ", randNum);
 
-    if (randNum <= pLost)
+    if (randNum < pLost)
     {
         printf("Lose this packet\n");
         return 1;
     }
-    else if (randNum <= (pLost + pDelayed))
+    if (randNum < pDelayed)
     {
         printf("Delay this packet\n");
         return 2;
     }
-    else if (randNum <= (pLost + pDelayed + pError))
+    if (randNum < pError)
     {
         printf("Corrupt this packet\n");
         return 3;
@@ -168,5 +168,79 @@ int isLostDelayedCorrupt(double lost, double delayed, double error)
     {
         printf("Pass packet to Receiver as is\n");
         return 0;
+    }
+}
+void *delayFunc()
+{
+    
+    
+}
+/*
+ * Appropriately handle the result of isLostDelayedCorrupt()
+ */
+void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHostName, int rcvPort, struct sockaddr *senderAddress, socklen_t addr_size)
+{
+    struct sockaddr_in rcvAddress;
+    socklen_t rcvaddr_size = sizeof(struct sockaddr);
+    pthread_t tid;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr)
+    pthread_attr_setdetachedstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_create(&tid, &attr, delayFunc, NULL);
+    // Delay packet (need to dispatch a thread)
+    if (LDC == 2)
+        ;
+    // 'Corrupt' packet
+    if (LDC == 3)
+        thisSegment->isCorrupt = 1; 
+     // Always send so long as packet isn't 'lost'
+    if (LDC != 1)
+     {
+        sentMessage(proxSockFD, thisSegment, rcvHostName, rcvPort);
+        sentSegmentP *rcvSegment = malloc(sizeof(sentSegmentP));
+        printf("proxySeg->corrupt = %d\n", thisSegment->isCorrupt);
+        recvfrom(proxSockFD, rcvSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&rcvAddress, &rcvaddr_size);
+        printf("Passing ack from Receiver to Sender\n");
+        //rcvSegment->isCorrupt = thisSegment->isCorrupt;
+        printf("rcvSegment->corrupt = %d\n\n", rcvSegment->isCorrupt);
+        int errorCheck = sendto(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, senderAddress, addr_size);
+        if (errorCheck < 0)
+        {
+            fprintf(stderr, "%s\n", strerror(errno));
+        }
+        free(rcvSegment);
+    }
+    // Request sender to resend 'lost' packet by forcing timeout
+    else
+    {
+        printf("puttin her to sleep\n");
+        sleep(7);   
+    }
+
+    free(thisSegment);
+}
+
+/*
+ * Make sure the number of command line parameters entered
+ * by the user is correct
+ */
+void checkArgCount(int argc)
+{
+    if (argc != 7)
+    {
+        printf("Run with <rdtProxy port> <Receiver Host Name> <rdtReciever PortNum> <Lost Percent> <Delayed Percent> <Error Percent>\n");
+        exit(-1);
+    }
+}
+
+/*
+ * Make sure LDC does not exceed 99%
+ */
+void checkLDCRange(int lost, int delayed, int corrupt)
+{
+    if (lost + delayed + corrupt > 98)
+    {
+        printf("Every packet will be lost, delayed or corrupt, please rerun rdtProxy with values summing up to less than 100\n");
+        exit(-1);
     }
 }
