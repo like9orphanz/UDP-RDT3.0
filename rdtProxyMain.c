@@ -26,7 +26,7 @@
 
  int main(int argc, char *argv[])
 {
-	int portNum, rcvPort, LDC, proxSockFD;
+	int portNum, rcvPort, LDC = 0, proxSockFD, duplicate = 0;
 	double lostPercent, delayedPercent, errorPercent;
 	char *rcvHostName;
 	struct sockaddr_in proxAddress, senderAddress;
@@ -51,14 +51,20 @@
 
 	while(1)
 	{	
-		//Receive segment from Sender
 		sentSegmentP *thisSegment = malloc (sizeof(sentSegmentP));
-		recvfrom(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
-		printf("Sender->segMessage: %s\n", thisSegment->segMessage);
+		//Receive segment from Sender
+		if (duplicate == 0)
+		{
+			recvfrom(proxSockFD, thisSegment, sizeof(sentSegmentP), 0, (struct sockaddr *)&senderAddress, &addr_size);
+			printf("Sender->segMessage: %s\n", thisSegment->segMessage);
+			if (LDC == 2)
+				duplicate = 1;
+		}
 
 		// 'Roll the di' to see if the network should 'lose', 'delay' or 'corrupt' packet
-		LDC = isLostDelayedCorrupt(lostPercent, delayedPercent, errorPercent);
-		handleLDC(LDC, thisSegment, proxSockFD, rcvHostName, rcvPort, (struct sockaddr *)&senderAddress, addr_size);
+		LDC = isLostDelayedCorrupt(lostPercent, delayedPercent, errorPercent, duplicate);
+		handleLDC(LDC, thisSegment, proxSockFD, rcvHostName, rcvPort, (struct sockaddr *)&senderAddress, addr_size, duplicate, portNum);
+		if (duplicate == 1) duplicate = 0;
 	}
 
 	return 0;

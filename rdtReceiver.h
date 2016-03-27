@@ -96,4 +96,9 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd);
  */
 int sockCreation(int port, struct sockaddr_in *address);
 
+/*
+ * Tests to see if the received segment is a duplicate
+ */
+ int isDuplicateSegment(recvSegmentP *thisSegment, int prevAck);
+
 #endif

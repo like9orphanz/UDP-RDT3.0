@@ -27,13 +27,17 @@ typedef struct sentSegment
 typedef struct thread
 {
 	int sockFD;
-	const struct sockaddr *dest;
-	socklen_t dest_size;
+	char *destName;
+	struct sockaddr *sender;
+	socklen_t sender_size;
+	int isDone;
+	int portNumber;
+	int destPort;
 	int ack;
 	int isCorrupt;
 	int seqNum;
 	char segMessage[10];
-}threadP;
+} threadP;
 
 /*
  * Create and bind the socket
@@ -74,12 +78,12 @@ int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int se
  * 2 - Packet is delayed
  * 3 - Error with packet (corrupt)
  */
-int isLostDelayedCorrupt(double lost, double delayed, double error);
+int isLostDelayedCorrupt(double lost, double delayed, double error, int duplicate);
 
 /*
  * Appropriately handle the result of isLostDelayedCorrupt()
  */
-void handleLDC(int LDC, sentSegmentP *thisSegment, int sockFD, char *rcvHostName, int rcvPort, struct sockaddr *senderAddress, socklen_t addr_size);
+void handleLDC(int LDC, sentSegmentP *thisSegment, int sockFD, char *rcvHostName, int rcvPort, struct sockaddr *senderAddress, socklen_t addr_size, int duplicate, int portNum);
 
 /*
  * Make sure the number of command line parameters entered

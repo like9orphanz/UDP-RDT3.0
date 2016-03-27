@@ -125,7 +125,7 @@ int closeSocket(int sockFD)
 void printHostInfo()
 {
  	char hostname[1024];
-    	hostname[1023] = '\0';
+    hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -173,4 +173,18 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd)
     socklen_t addrLen = sizeof(struct sockaddr);
     getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
     fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
+}
+
+/*
+ * Check to see if the segment is a duplicate
+ */
+int isDuplicateSegment(recvSegmentP *thisSegment, int prevAck) {
+	printf("thisSegment->ack = %d\n", thisSegment->ack);
+	if (prevAck == 2) return 0;
+	if (thisSegment->ack == prevAck) 
+	{
+		printf("Duplcate segment... throwing away\n");
+		return 1;
+	}
+	else return 0;
 }

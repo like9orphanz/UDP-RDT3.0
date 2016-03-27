@@ -130,8 +130,13 @@ SegmentP *createSegment(int i, char *parsedChars)
 	SegmentP *thisSegment = (SegmentP *) malloc(sizeof(SegmentP));
 
 	thisSegment->ack = i%2;
+	if (thisSegment->ack == 0)
+		thisSegment->seqNum = 1;
+	else
+		thisSegment->seqNum = 0;
+	
 	thisSegment->isCorrupt = 0;
-	thisSegment->seqNum = i%2;
+
 	strcpy(thisSegment->segMessage, parsedChars);
 	free(parsedChars);
 
@@ -230,6 +235,7 @@ int handleTimerResult(int sockFD, struct sockaddr_in *proxAddress, SegmentP *rcv
 	if (selectVal == 1)
 	{
 		recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
+		printf("HTR segMessage = %s\n", rcvSegment->segMessage);
 		if (rcvSegment->isCorrupt)
 		{
 			printf("Packet was corrupted, resending\n");
