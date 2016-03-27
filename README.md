@@ -28,3 +28,12 @@ rdtSender
 our payload is a segmented message of 4 bytes
 our header is 3 ints (ack, isCorrupt, seqNum) totalling 6 bytes
 payload and header combined into 1 data structure to be sent is 10 bytes as instructed.
+
+--ISSUES--
+
+After testing many times in many different ways we have a small issue regarding lost packet.
+	when we go over 25 % for lost packet we get weird results with regard to the final message
+
+combined with delay and corrupt packets a sample input into the command line would be 
+		./rdtProxy 60051 cs-ssh1.cs.uwf.edu 60050 25 40 30
+			the final message is perfect 
