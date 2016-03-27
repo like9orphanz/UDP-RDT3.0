@@ -60,12 +60,11 @@
 			if (LDC == 2)
 				duplicate = 1;
 		}
-
 		// 'Roll the di' to see if the network should 'lose', 'delay' or 'corrupt' packet
 		LDC = isLostDelayedCorrupt(lostPercent, delayedPercent, errorPercent, duplicate);
 		handleLDC(LDC, thisSegment, proxSockFD, rcvHostName, rcvPort, (struct sockaddr *)&senderAddress, addr_size, duplicate, portNum);
-		if (duplicate == 1) duplicate = 0;
+		if (duplicate == 1) 
+			duplicate = 0;
 	}
-
 	return 0;
 }

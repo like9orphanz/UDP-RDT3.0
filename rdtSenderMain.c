@@ -46,13 +46,15 @@ int main(int argc, char *argv[])
 	proxyPortNum = atoi(argv[3]);
 	sockFD = createSocket();
 	int sendSockFD = sockCreation(proxyHostName, portNum, &sendAddress);
-    printHostInfo();
-    portInfo(&sendAddress, sendSockFD);
+    	printHostInfo();
+    	portInfo(&sendAddress, sendSockFD);
 	inputMessage = getMessage();	
+	
 	if ((strlen(inputMessage)%2) == 0)
 		runs = strlen(inputMessage) / 4;
 	else
 		runs = (strlen(inputMessage) / 4) + 1;
+	
 	while (i < runs)
 	{	
 		// Send segment
@@ -68,6 +70,5 @@ int main(int argc, char *argv[])
 		free(sendSegment);
 		free(rcvSegment); 
 	}
-
 	return 0;
 }

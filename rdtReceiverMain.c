@@ -48,9 +48,8 @@ int main(int argc, char *argv[])
 		// Accept segment into final message
 		if (thisSegment->isCorrupt == 0 && duplicate != 1)
 		{
-			printf("recvSegment = %s\n", thisSegment->segMessage);
 			strcat(printMessage, thisSegment->segMessage);
-			printf("the entire message on Receiver: %s\n", printMessage);
+			printf("Message Forming: %s\n", printMessage);
 
 			prevAck = thisSegment->ack;
 
@@ -59,12 +58,10 @@ int main(int argc, char *argv[])
 			else 
 				thisSegment->ack = 1;
 			
-			printf("Ack being sent back to receiver: %d\n", thisSegment->ack);
 			sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, addr_size);
 		}
 		if (thisSegment->isCorrupt == 1 && duplicate != 1)
 		{
-			printf("Ack being sent back to receiver (corrupt): %d\n", thisSegment->ack);
 			sendto(sockFD, thisSegment, sizeof(recvSegmentP), 0, (struct sockaddr *)&sendMessage, addr_size);
 		}
 

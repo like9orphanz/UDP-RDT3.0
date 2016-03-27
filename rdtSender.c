@@ -46,7 +46,7 @@ void handler(int param)
 void printHostInfo()
 {
 	char hostname[1024];
-    hostname[1023] = '\0';
+    	hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -63,7 +63,7 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
 	socklen_t addrLen = sizeof(struct sockaddr);
-    getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+    	getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
 	fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }
 
@@ -116,7 +116,6 @@ int sockCreation(char * hostName, int port, struct sockaddr_in *dest)
             close(sock_ls);
             exit(1);
         }
-
 	return sock_ls;
 }					
 
@@ -128,18 +127,16 @@ SegmentP *createSegment(int i, char *parsedChars)
 	if (parsedChars == 0x00) return  0x00;
 
 	SegmentP *thisSegment = (SegmentP *) malloc(sizeof(SegmentP));
-
 	thisSegment->ack = i%2;
+	
 	if (thisSegment->ack == 0)
 		thisSegment->seqNum = 1;
 	else
 		thisSegment->seqNum = 0;
 	
 	thisSegment->isCorrupt = 0;
-
 	strcpy(thisSegment->segMessage, parsedChars);
 	free(parsedChars);
-
 	return thisSegment;
 }
 
@@ -167,7 +164,6 @@ char *parseMessage(int count, char *message)
 			a++;
 		}
 	}
-
 	return parsedChars;
 }
 
@@ -176,27 +172,25 @@ char *parseMessage(int count, char *message)
  */ 
 int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort)
 {
-    int errorCheck = 0;
-    struct hostent * htptr;
-    struct sockaddr_in dest;
+	int errorCheck = 0;
+   	struct hostent * htptr;
+    	struct sockaddr_in dest;
 
-    if((htptr = gethostbyname(serverName)) == NULL)
-    {
-        fprintf(stderr, "Invalid host name\n");
-        return -1;
-    }
+    	if((htptr = gethostbyname(serverName)) == NULL)
+    	{
+        	fprintf(stderr, "Invalid host name\n");
+        	return -1;
+    	}
 
-    memset(&dest, 0, sizeof(dest));
-    dest.sin_family = AF_INET;
-    dest.sin_port = htons(serverPort);
-    dest.sin_addr = *((struct in_addr *)htptr->h_addr);
+    	memset(&dest, 0, sizeof(dest));
+    	dest.sin_family = AF_INET;
+    	dest.sin_port = htons(serverPort);
+    	dest.sin_addr = *((struct in_addr *)htptr->h_addr);
 
-    errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
+    	errorCheck = sendto(sockFD, thisSegment, sizeof(SegmentP), 0, (const struct sockaddr *)&dest, sizeof(dest));
 
 	if(errorCheck == -1)
 		fprintf(stderr, "%s\n", strerror(errno));
-
-	printf("Proxy->segMessage = %s\n\n", thisSegment->segMessage);
 
     return errorCheck;
 }
@@ -243,7 +237,6 @@ int handleTimerResult(int sockFD, struct sockaddr_in *proxAddress, SegmentP *rcv
 		}
 		else
 		{
-			printf("ack = %d\n", rcvSegment->ack);
 			return 0;
 		}
 	}
@@ -278,6 +271,5 @@ char *getMessage()
 	printf("Enter a Message: ");
 	fgets(inputMessage, 256, stdin);
 	inputMessage[strlen(inputMessage)-1] = '\0';
-
 	return inputMessage;
 }

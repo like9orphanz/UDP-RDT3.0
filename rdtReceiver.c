@@ -125,7 +125,7 @@ int closeSocket(int sockFD)
 void printHostInfo()
 {
  	char hostname[1024];
-    hostname[1023] = '\0';
+	hostname[1023] = '\0';
 	struct hostent * hostptr;
 	gethostname(hostname, 1023);
 	//find the ip address
@@ -142,9 +142,9 @@ int sockCreation(int port, struct sockaddr_in *address)
 	int sock_ls;
 	
 	memset(address, 0, sizeof(*address));
-    address->sin_family = AF_INET;
-    address->sin_addr.s_addr = htonl(INADDR_ANY);
-    address->sin_port = htons(port);
+    	address->sin_family = AF_INET;
+    	address->sin_addr.s_addr = htonl(INADDR_ANY);
+    	address->sin_port = htons(port);
 
 	//creates a socket
 	if((sock_ls = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
@@ -170,20 +170,19 @@ int sockCreation(int port, struct sockaddr_in *address)
 void portInfo(struct sockaddr_in *serverAddress, int sockfd)
 {
 	struct sockaddr_in printSock;
-    socklen_t addrLen = sizeof(struct sockaddr);
-    getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
-    fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
+    	socklen_t addrLen = sizeof(struct sockaddr);
+    	getsockname(sockfd, (struct sockaddr *)&printSock, &addrLen);
+    	fprintf(stderr, "Sock port: %d\n", ntohs(printSock.sin_port));
 }
 
 /*
  * Check to see if the segment is a duplicate
  */
-int isDuplicateSegment(recvSegmentP *thisSegment, int prevAck) {
-	printf("thisSegment->ack = %d\n", thisSegment->ack);
+int isDuplicateSegment(recvSegmentP *thisSegment, int prevAck)
+{
 	if (prevAck == 2) return 0;
 	if (thisSegment->ack == prevAck) 
 	{
-		printf("Duplcate segment... throwing away\n");
 		return 1;
 	}
 	else return 0;
