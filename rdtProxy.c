@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 pthread_mutex_t lock;
-
+pthread_t tid;
 /*
  * Create and bind the socket
  */
@@ -107,8 +107,7 @@ int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int se
     int errorCheck = 0;
     struct hostent * htptr;
     struct sockaddr_in dest;
-
-    //printf("destName = %s\n", serverName);
+   
     if((htptr = gethostbyname(serverName)) == NULL)
     {
         fprintf(stderr, "Invalid host name\n");
@@ -230,7 +229,7 @@ void *delayFunc(void *data)
     free(rcvSegment);
     threadStuff->isDone = 1;
     pthread_mutex_unlock(&lock);
-	return NULL;
+	pthread_exit(NULL);
 }
 
 /*
@@ -240,10 +239,6 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
 {
     struct sockaddr_in rcvAddress;
     socklen_t rcvaddr_size = sizeof(struct sockaddr);
-    pthread_t tid;
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
     threadP *threadStuff;
 
     // Delay packet (need to dispatch a thread)
@@ -264,7 +259,7 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
 
         strcpy(threadStuff->segMessage, thisSegment->segMessage);
 	    
-        pthread_create(&tid, &attr, &delayFunc, (void *)threadStuff);
+        pthread_create(&tid, NULL, &delayFunc, (void *)threadStuff);
 
     }  	 
     // 'Corrupt' packet
@@ -307,12 +302,13 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
 
         pthread_mutex_unlock(&lock);
         
+	if(duplicate == 1)
+	{
+		printf("made it here\n");
+		pthread_join(tid, NULL);	
+	}
+
         free(rcvSegment);
-        if (duplicate == 1)
-        {
-           	printf("made it here\n");
-		 pthread_join(tid, NULL);
-        }
     }
     // Request sender to resend 'lost' packet by forcing timeout
     if (LDC == 1 && LDC !=2)
