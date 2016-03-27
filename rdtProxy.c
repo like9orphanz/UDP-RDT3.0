@@ -202,8 +202,10 @@ void *delayFunc(void *data)
     thisSegment->seqNum = threadStuff->seqNum;
     thisSegment->isCorrupt = threadStuff->isCorrupt;
     strcpy(thisSegment->segMessage, threadStuff->segMessage);
-    sleep(6);
-    printf("ack in threadFunc = %d\n", thisSegment->ack);
+    	printf("above sleeping thread\n");
+	sleep(6);
+    printf("did i make it here in the thread\n");
+	printf("ack in threadFunc = %d\n", thisSegment->ack);
     pthread_mutex_lock(&lock);
     sentMessage(threadStuff->sockFD, thisSegment, threadStuff->destName, threadStuff->destPort);
     
@@ -228,7 +230,7 @@ void *delayFunc(void *data)
     free(rcvSegment);
     threadStuff->isDone = 1;
     pthread_mutex_unlock(&lock);
-    pthread_exit(0);
+	return NULL;
 }
 
 /*
@@ -262,7 +264,7 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
 
         strcpy(threadStuff->segMessage, thisSegment->segMessage);
 	    
-        pthread_create(&tid, &attr, delayFunc, (void *)threadStuff);
+        pthread_create(&tid, &attr, &delayFunc, (void *)threadStuff);
 
     }  	 
     // 'Corrupt' packet
@@ -308,7 +310,8 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
         free(rcvSegment);
         if (duplicate == 1)
         {
-            pthread_join(tid, NULL);
+           	printf("made it here\n");
+		 pthread_join(tid, NULL);
         }
     }
     // Request sender to resend 'lost' packet by forcing timeout
