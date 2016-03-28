@@ -278,7 +278,7 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
     	if (LDC == 1 && LDC !=2)
     	{
         	printf("Simulating TimeOut\n\n");
-        	sleep(7);   
+        	//sleep(7);   
     	}
 
     	free(thisSegment);
