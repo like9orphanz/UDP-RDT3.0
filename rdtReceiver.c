@@ -22,12 +22,6 @@
 #include <netdb.h>
 
 /*
- *	This program is a TCPclient that communicates to TCPserver. This program uses TCPmain 
- *	to send a certain ammount of messages and tests to see if those messages
- *	fit the criteria that the server replies with
- */
-
-/*
  * Creates a datagram socket, returns the socket file descriptor
  */
 int createSocket()
@@ -98,7 +92,6 @@ int receiveResponse(int sockFD, recvSegmentP *thisSegment)
  * Prints the response to the screen in a formatted way.
  *
  * response - the server's response as an XML formatted string
- *
  */
 void printResponse(char * response)
 {

@@ -8,7 +8,8 @@
  * Systems and Networks 2
  * Project 4
  *
- * Implementation of functions described by rdtProxy.h
+ * Proxy.c will carry out the delay, corrupt, and lost packe scenarios.
+ * Implementation of the functions are described by rdtProxy.h
  */
 
 #include "rdtSender.h"
@@ -35,6 +36,10 @@ pthread_mutex_t lock;
 pthread_t tid;
 /*
  * Create and bind the socket
+ *
+ * hostName  - the name of the Host
+ * port  - the port number
+ * dest  - struct containing the address info
  */
 int sockCreation(char *hostName, int port, struct sockaddr_in *dest)
 {
@@ -61,7 +66,10 @@ int sockCreation(char *hostName, int port, struct sockaddr_in *dest)
 }
 
 /*
- * Print the host information to the terminal
+ * Display the port information to the screen
+ *
+ * serverAddress  - struct containing the address info
+ * sockfd  - file descriptor
  */
 void printHostInfo()
 {
@@ -100,6 +108,15 @@ int createSocket()
 	getsockname(sockfd, (struct sockaddr *)&printSock, &addrSize);
 	return sockfd;
 }
+
+/*
+ * Send message to receiver
+ *
+ * sockFD  - file descriptor
+ * thisSegment  - payload and header
+ * serverName  - address struct for receiver
+ * serverPort  - port number of the receiver         
+ */
 int sentMessage(int sockFD, sentSegmentP *thisSegment, char * serverName, int serverPort)
 {
 	printf("Receiver->segMessage: %s\n", thisSegment->segMessage);
@@ -181,6 +198,8 @@ int isLostDelayedCorrupt(double lost, double delayed, double error, int duplicat
 
 /*
  * Delay the packet
+ *
+ * data - the void pointer of the struct with the receiver info
  */
 void *delayFunc(void *data)
 { 
@@ -205,6 +224,16 @@ void *delayFunc(void *data)
 
 /*
  * Appropriately handle the result of isLostDelayedCorrupt()
+ *
+ * LCD           - contains either 0 1 2 or 3
+ * thisSegment   - payload and header
+ * sockFD        - file descriptor
+ * rcvHostName   - name of the receiver hostname
+ * rcvPort       - port number of the receiver
+ * senderAddress - struct of the sender address
+ * addr_size     - size of the sender address
+ * duplicate     - either 1 or 0 for duplicates
+ * portNum       - holds the prox port number
  */
 void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHostName, int rcvPort, struct sockaddr *senderAddress, socklen_t addr_size, int duplicate, int portNum)
 {
@@ -290,6 +319,8 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
 /*
  * Make sure the number of command line parameters entered
  * by the user is correct
+ *
+ * argc  - the amount of the arguments from the command line
  */
 void checkArgCount(int argc)
 {
@@ -305,7 +336,7 @@ void checkArgCount(int argc)
  */
 void checkLDCRange(int lost, int delayed, int corrupt)
 {
-    	if (lost + delayed + corrupt > 98)
+    	if (lost + delayed + corrupt > 99)
     	{
         	printf("Every packet will be lost, delayed or corrupt, please rerun rdtProxy with values summing up to less than 100\n");
         	exit(-1);

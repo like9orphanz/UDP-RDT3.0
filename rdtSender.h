@@ -25,18 +25,20 @@ typedef struct Segment
 } SegmentP;
 
 /*
- * Sends a message to an RDT receiver on a specified host and port.
- * 
- * destHost  - the name of the host on which the receiver runs
- * destPort  - the number of the port on which the receiver listens
- * message   - the entire null terminated message to be sent to the receiver
+ * Send message to the proxy
  *
- * return 0, if no error; otherwise, a negative number indicating the error
- */
+ * sockFD      - the file descriptor
+ * thisSegment - the struct containing the header and payload
+ * serverName  - the name of the proxy
+ * serverPort  - the port for the proxy 
+ */ 
 int sendMessage(int sockFD, SegmentP *thisSegment, char * serverName, int serverPort);
 
 /*
- * Prints out the socket port with getsockname()
+ * Displays port info with the getsockname() funciton
+ *
+ * serverAddress  - the struct containing the address info
+ * sockfd         - file descriptor
  */
 void portInfo(struct sockaddr_in *serverAddress, int sockfd);
 
@@ -46,7 +48,11 @@ void portInfo(struct sockaddr_in *serverAddress, int sockfd);
 int createSocket();
 
 /*
- * Creates the listening socket
+ * Create the socket
+ *
+ * hostName - the name of the host
+ * port     - the port of the host
+ * dest     - struct containing the address info    
  */
 int sockCreation(char * hostName, int port, struct sockaddr_in *dest);
 
@@ -63,11 +69,17 @@ void handler(int param);
 
 /*
  * Create a 'segment' structure, assign the pased string to segMessage
+ *
+ * i            - the count
+ * parsedChars  - pointer to the segment
  */
 SegmentP *createSegment(int i, char *parsedChars);
 
 /*
- * Parse the message obtained from user in 'getUserInput()'
+ * Parse the message obtained from user
+ *
+ * count   - counter
+ * message - containing the message input by the user
  */
 char *parseMessage(int count, char *message);
 
@@ -78,8 +90,17 @@ int runTimer(int sockFD);
 
 /*
  * Appropriatly handles any valid output from runTimer()
+ *
+ * sockFD      - the file descriptor
+ * proxAddress - struct containing the proxy info
+ * rcvSegment  - the struct containing the recv payload and header
+ * thisSegment - the struct containing the sent payload and header
+ * serverName  - the name of the host
+ * serverPort  - the port Number of the host
+ * selectVal   - the value of the select function from the sender 
  */
 int handleTimerResult(int sockFD, struct sockaddr_in *proxAddress, SegmentP *rcvSegment, SegmentP *thisSegment, char * serverName, int serverPort, int selectVal);
+
 /*
  * Make sure the number of command line parameters entered
  * by the user is correct
