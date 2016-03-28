@@ -162,12 +162,12 @@ int isLostDelayedCorrupt(double lost, double delayed, double error, int duplicat
         	printf("Lose this packet\n");
         	return 1;
     	}
-    	if (randNum < pDelayed)
+    	if (randNum < pDelayed + pLost)
     	{
         	printf("Delay this packet\n");
         	return 2;
     	}
-    	if (randNum < pError)
+    	if (randNum < pError + pDelayed + pLost)
     	{
         	printf("Corrupt this packet\n");
         	return 3;
@@ -216,7 +216,7 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
     	if (LDC == 2)
     	{
         	threadStuff = malloc(sizeof(threadP));
-		threadStuff->destName = rcvHostName;
+		  threadStuff->destName = rcvHostName;
         	threadStuff->destPort = rcvPort;
 	    	threadStuff->sockFD = proxSockFD;
 	    	threadStuff->ack = thisSegment->ack;
@@ -233,7 +233,10 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
     	}  	 
     	// 'Corrupt' packet
     	if (LDC == 3)
+        {   
+            printf("corrupt packet\n");
         	thisSegment->isCorrupt = 1;
+        }
      	// If the packet isn't lost, always receive info from the receiver.
      	// If it's delayed it will be sent in that functin
     	if (LDC != 1 && LDC != 2)
@@ -277,7 +280,7 @@ void handleLDC(int LDC, sentSegmentP *thisSegment, int proxSockFD, char *rcvHost
     	// Request sender to resend 'lost' packet by forcing timeout
     	if (LDC == 1 && LDC !=2)
     	{
-        	printf("Simulating TimeOut\n\n");
+        	//printf("Simulating TimeOut\n\n");
         	//sleep(7);   
     	}
 
