@@ -255,7 +255,6 @@ int handleTimerResult(int sockFD, struct sockaddr_in *proxAddress, SegmentP *rcv
 	if (selectVal == 1)
 	{
 		recvfrom(sockFD, rcvSegment, sizeof(SegmentP), 0, (struct sockaddr *)&proxAddress, &addr_size);
-		printf("HTR segMessage = %s\n", rcvSegment->segMessage);
 		if (rcvSegment->isCorrupt)
 		{
 			printf("Packet was corrupted, resending\n");
